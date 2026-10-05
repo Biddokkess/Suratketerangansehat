@@ -2,11 +2,12 @@
 <html lang="id">
 <head>
 <!--
-  SUKET BIDDOKKES POLDA NTB — Halaman pemohon & panel petugas (versi 2.0)
+  SUKET BIDDOKKES POLDA NTB — Satu website: Buat surat & Data surat (versi 3.0)
   1. Isi API_URL (cari "KONFIGURASI" di bagian <script> bawah) dengan URL Web App /exec dari Apps Script.
   2. Upload file ini sebagai index.html ke GitHub Pages, bersama logo-biddokkes.png dan logo-polri.png
      (logo opsional; tanpa logo tampil ikon cadangan).
-  3. Panel petugas: klik tulisan "Biddokkes Polda NTB" di kiri atas, atau tambahkan #admin di akhir alamat.
+  3. Halaman Data surat: tombol "Data surat" di kanan atas, atau tambahkan #/data di akhir alamat.
+     Tanpa password. Surat langsung terbit saat formulir dikirim, PDF tersimpan otomatis ke Google Drive.
 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -197,7 +198,13 @@ input[type=date].inp::-webkit-date-and-time-value{text-align:left}
    Responden: menu
    ══════════════════════════════════════════════════════════════════ */
 .shell{max-width:1120px;margin:0 auto;padding:20px 16px 36px}
-.brand-btn{border-radius:12px;padding:2px;margin:-2px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.topnav{display:inline-flex;padding:3px;border:1px solid var(--line);border-radius:999px;background:rgba(11,28,42,.85)}
+.topnav a{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:0 14px;border-radius:999px;font:600 14px var(--f-ui);color:var(--text-2);text-decoration:none;transition:background .15s,color .15s}
+.topnav a:hover{color:var(--text)}
+.topnav a.on{background:var(--accent);color:var(--accent-ink)}
+.topnav .i{width:17px;height:17px}
+@media (max-width:420px){.topnav a{padding:0 11px;font-size:13.5px}.topnav .i{display:none}}
 .menu-grid{display:grid;gap:28px;margin-top:20px}
 .hero{padding-top:18px}
 .h-title{font:500 clamp(38px,10vw,62px)/.98 var(--f-ui);font-stretch:85%;letter-spacing:-.02em}
@@ -294,26 +301,26 @@ input[type=date].inp::-webkit-date-and-time-value{text-align:left}
 .done h1{font-size:32px;margin:26px 0 10px}
 .done-msg{font-size:18px;line-height:1.55;color:var(--text)}
 .done-sum{margin:26px 0 28px}
-.done-act{display:flex;flex-wrap:wrap;gap:10px}
+.done-no{margin:24px 0 0;padding:16px 18px;border-radius:var(--r-md);border:1px solid rgba(61,219,195,.45);background:linear-gradient(135deg,rgba(61,219,195,.12),rgba(43,143,208,.08));box-shadow:0 0 40px -16px rgba(61,219,195,.6)}
+.done-no span{display:block;font:500 13px var(--f-ui);color:var(--text-2)}
+.done-no b{display:block;margin-top:4px;font:600 22px/1.25 var(--f-ui);font-stretch:90%;letter-spacing:.01em;color:var(--accent-hi);overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.done-sum{margin:14px 0 20px}
+.done-dl{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.done-dl .btn-pri{grid-column:1/-1;min-height:52px;font-size:16px}
+.done-arch{display:flex;gap:9px;align-items:flex-start;margin-top:16px;font-size:14px;line-height:1.45;color:var(--text-2)}
+.done-arch .i{width:18px;height:18px;margin-top:1px}
+.done-arch[data-s="ok"] .i{color:var(--good-hi)}
+.done-arch[data-s="err"] .i{color:var(--warn-hi)}
+.done-arch .spin{margin-top:2px;color:var(--accent)}
+.done-act{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
+.done-act .btn-link{color:var(--accent-hi);text-decoration:none}
+.rv dd.mono{font-family:var(--f-ui);font-variant-numeric:tabular-nums}
+.rv-err.is-dup{border-color:rgba(196,128,26,.6);background:rgba(196,128,26,.1)}
+.rv-err.is-dup .i{color:var(--warn-hi)}
+.rv-link{color:var(--accent-hi);font-weight:600;white-space:nowrap}
 
 /* ══════════════════════════════════════════════════════════════════
-   Petugas: masuk
-   ══════════════════════════════════════════════════════════════════ */
-.login{min-height:100vh;display:grid;place-items:center;padding:24px 16px}
-.login-card{width:100%;max-width:400px;padding:28px 24px 22px;border-radius:var(--r-lg);border:1px solid var(--line-2);background:rgba(11,28,42,.96);box-shadow:0 40px 90px -40px rgba(0,0,0,.95)}
-.login-card h1{font-size:28px;margin:26px 0 6px}
-.login-card>p{color:var(--text-2);font-size:14.5px;margin-bottom:22px}
-.login-card .check{margin:4px 0 18px}
-.login-card .btn-link{margin-top:10px}
-.pw{position:relative}
-.pw .inp{padding-right:52px}
-.pw-eye{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:42px;height:42px;display:grid;place-items:center;border-radius:8px;color:var(--text-2)}
-.pw-eye:hover{color:var(--text);background:var(--ink-3)}
-.shake{animation:shake .38s}
-@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
-
-/* ══════════════════════════════════════════════════════════════════
-   Petugas: dasbor
+   Data surat
    ══════════════════════════════════════════════════════════════════ */
 .adm{display:grid;grid-template-columns:256px minmax(0,1fr);min-height:100vh}
 .side{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:20px 14px 16px;border-right:1px solid var(--line);background:rgba(6,20,31,.94);overflow-y:auto}
@@ -328,9 +335,18 @@ input[type=date].inp::-webkit-date-and-time-value{text-align:left}
 .nav-i .i,.side-link .i{width:19px;height:19px}
 .nav-t{flex:1;min-width:0}
 .nav-n{font:500 13px var(--f-ui);color:var(--text-3);font-variant-numeric:tabular-nums;min-width:22px;text-align:right}
-.nav-p{display:inline-flex;align-items:center;gap:5px;font:600 12px/1 var(--f-ui);color:var(--text);background:rgba(196,128,26,.16);border:1px solid rgba(196,128,26,.55);border-radius:999px;padding:4px 8px}
-.nav-p i{width:6px;height:6px;border-radius:50%;background:var(--warn-hi)}
-.side-foot{margin-top:auto;padding-top:16px;border-top:1px solid var(--line)}
+.nav-p{display:inline-flex;align-items:center;gap:5px;font:600 12px/1 var(--f-ui);color:var(--text);background:rgba(43,143,208,.16);border:1px solid rgba(43,143,208,.55);border-radius:999px;padding:4px 8px}
+.nav-p i{width:6px;height:6px;border-radius:50%;background:#6FB8EA}
+.side-foot{margin-top:auto;padding:14px 10px 0;border-top:1px solid var(--line);font-size:12.5px;line-height:1.5;color:var(--text-3)}
+.side-new{display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;margin:16px 0 0;border-radius:var(--r-sm);background:var(--accent);color:var(--accent-ink);font:600 15px var(--f-ui);text-decoration:none;box-shadow:0 10px 28px -14px rgba(61,219,195,.8);transition:background .15s}
+.side-new:hover{background:var(--accent-hi)}
+.side-new .i{width:18px;height:18px}
+.tb-h{flex:1;min-width:0}
+.tb-new{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.tb-new:hover{background:var(--accent-hi);color:var(--accent-ink);border-color:var(--accent-hi)}
+@media (min-width:1024px){.tb-new{display:none}}
+.p-info{background:rgba(43,143,208,.14);border-color:rgba(43,143,208,.55)}
+.p-info .spin{width:12px;height:12px;color:#6FB8EA}
 .side-link .ext{width:14px;height:14px;margin-left:auto;color:var(--text-3)}
 .main{min-width:0;padding:20px 28px 110px}
 .topbar{display:flex;align-items:center;flex-wrap:wrap;gap:12px 16px;margin-bottom:20px}
@@ -375,7 +391,7 @@ input[type=date].inp::-webkit-date-and-time-value{text-align:left}
 .kbd{position:absolute;right:10px;top:50%;transform:translateY(-50%);min-width:22px;height:22px;display:grid;place-items:center;border:1px solid var(--line-2);border-radius:6px;font:500 12px var(--f-ui);color:var(--text-3)}
 .list{border:1px solid var(--line);border-radius:var(--r-md);background:rgba(11,28,42,.96);overflow:hidden;transition:opacity .2s}
 .list.stale{opacity:.5}
-.list-h,.row{display:grid;grid-template-columns:24px 40px minmax(0,1.5fr) minmax(0,1.25fr) 128px 128px 84px;align-items:center;gap:14px;padding:0 14px}
+.list-h,.row{display:grid;grid-template-columns:24px 40px minmax(0,1.5fr) minmax(0,1.25fr) 124px 132px 166px;align-items:center;gap:14px;padding:0 14px}
 .list-h{min-height:44px;border-bottom:1px solid var(--line);font:500 13px var(--f-ui);color:var(--text-3)}
 .list-h .lh-name{grid-column:2/4}
 .list-h .lh-count{text-align:right}
@@ -400,6 +416,7 @@ input[type=date].inp::-webkit-date-and-time-value{text-align:left}
 .row-time{font:500 13.5px var(--f-ui);color:var(--text-2);font-variant-numeric:tabular-nums;white-space:nowrap}
 .row-st{display:flex;flex-wrap:wrap;gap:6px}
 .row-act{display:flex;justify-content:flex-end;gap:6px}
+.ra-t{display:none}
 .list-more{padding:14px;border-top:1px solid var(--line);display:flex;justify-content:center}
 .empty{padding:46px 24px;display:flex;flex-direction:column;align-items:flex-start;gap:10px;max-width:520px}
 .empty .i{width:30px;height:30px;color:var(--text-3);stroke-width:1.5}
@@ -414,7 +431,7 @@ input[type=date].inp::-webkit-date-and-time-value{text-align:left}
 .scrim{display:none}
 @media (min-width:1024px){.selbar{left:calc(50% + 128px)}}
 @media (max-width:1180px){
-  .list-h,.row{grid-template-columns:24px 40px minmax(0,1.4fr) minmax(0,1.2fr) 118px 84px}
+  .list-h,.row{grid-template-columns:24px 40px minmax(0,1.4fr) minmax(0,1.2fr) 132px 166px}
   .row-time,.lh-time{display:none}
 }
 @media (max-width:1023px){
@@ -437,18 +454,21 @@ input[type=date].inp::-webkit-date-and-time-value{text-align:left}
   .tabs-m::-webkit-scrollbar{display:none}
   .tab{flex:none;display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 15px;border-radius:999px;border:1px solid var(--line-2);font:600 14px var(--f-ui);color:var(--text-2)}
   .tab.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-  .tab-p{min-width:20px;height:20px;padding:0 6px;border-radius:999px;display:grid;place-items:center;background:var(--warn);color:#1D1203;font-size:12px;font-weight:700}
+  .tab-p{min-width:20px;height:20px;padding:0 6px;border-radius:999px;display:grid;place-items:center;background:var(--info);color:#fff;font-size:12px;font-weight:700}
   .tab.on .tab-p{background:var(--accent-ink);color:var(--accent)}
   .list-h{grid-template-columns:24px 1fr auto;min-height:46px}
+  .row-name,.row-sub{white-space:normal}
   .list-h .lh-name,.list-h .lh-no,.list-h .lh-st,.list-h .lh-time{display:none}
   .list-h .lh-count{grid-column:3}
   .list-h .lh-all{display:inline}
-  .row{grid-template-columns:24px minmax(0,1fr) auto;grid-template-areas:"ck main act" ". meta meta";gap:4px 12px;padding:12px 12px 12px 14px;align-items:start}
+  .row{grid-template-columns:24px minmax(0,1fr);grid-template-areas:"ck main" ". meta" ". act";gap:4px 12px;padding:12px 12px 12px 14px;align-items:start}
   .row .row-ck{grid-area:ck;padding-top:6px}
   .list-h .lh-all{font:500 13.5px var(--f-ui);color:var(--text-2)}
   .av{display:none}
   .row-main{grid-area:main}
-  .row-act{grid-area:act}
+  .row-act{grid-area:act;justify-content:flex-start;margin-top:6px}
+  .row-act .icon-btn:not(.danger){width:auto;display:inline-flex;gap:6px;padding:0 11px}
+  .row-act .ra-t{display:inline;font:600 13px var(--f-ui)}
   .row-meta{grid-area:meta;display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
   .row-time{display:inline}
   .row-st{order:-1}
@@ -457,7 +477,7 @@ input[type=date].inp::-webkit-date-and-time-value{text-align:left}
   .selbar .btn .lbl-l{display:none}
 }
 .lh-all{display:none}
-@media (max-width:420px){.selbar .btn-danger .t{display:none}.sync-l{display:none}}
+@media (max-width:420px){.selbar .btn .t{display:none}.sync-l{display:none}}
 
 /* Ruang kerja detail */
 .ws{align-items:stretch;padding:0}
@@ -468,7 +488,7 @@ input[type=date].inp::-webkit-date-and-time-value{text-align:left}
 .ws-t h2{font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ws-t p{margin-top:2px;font-size:13px;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ws-seg{display:none}
-.ws-body{flex:1;display:grid;grid-template-columns:minmax(330px,410px) minmax(0,1fr);min-height:0}
+.ws-body{flex:1;display:grid;grid-template-columns:minmax(320px,400px) minmax(0,1fr);min-height:0}
 .ws-form{overflow:auto;padding:18px;border-right:1px solid var(--line);-webkit-overflow-scrolling:touch}
 .ws-prev{overflow:auto;padding:20px 24px 28px;background:radial-gradient(110% 80% at 50% 25%,#17364D 0%,#0D2133 55%,#0B1C2A 100%)}
 .prev-h{display:flex;justify-content:space-between;align-items:center;gap:12px;max-width:794px;margin:0 auto 12px;font:500 13px var(--f-ui);color:var(--text-2)}
@@ -482,6 +502,11 @@ input[type=date].inp::-webkit-date-and-time-value{text-align:left}
 .adm-note b{color:var(--text);font-weight:600}
 .sect-d{background:transparent;padding:16px;margin-bottom:14px}
 .d-meta{font-size:13px;color:var(--text-3);line-height:1.5;padding:0 4px}
+.d-pdf{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center;margin:10px 0 0;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-sm);font-size:13.5px;color:var(--text-2)}
+.d-pdf .btn-link{color:var(--accent-hi);min-height:32px}
+.d-pdf .btn-link .i{width:17px;height:17px}
+.d-note{font-size:12.5px;color:var(--text-3)}
+.ws-form .rv-sect h3{margin-top:18px}
 .ws-foot{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:12px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
 .ws-foot .sp{flex:1}
 @media (min-width:1024px){
@@ -501,14 +526,7 @@ input[type=date].inp::-webkit-date-and-time-value{text-align:left}
   .ws-foot .sp{display:none}
 }
 
-/* Pengaturan, QR, konfirmasi */
-.sg{padding:18px 0;border-top:1px solid var(--line)}
-.sg:first-child{border-top:0;padding-top:6px}
-.sg h3{font-size:17px}
-.sg-d{margin-top:4px;color:var(--text-2);font-size:13.5px;line-height:1.5}
-.sg .field{margin:14px 0 0}
-.sg-grid{display:grid;gap:0 14px;grid-template-columns:repeat(3,minmax(0,1fr))}
-@media (max-width:560px){.sg-grid{grid-template-columns:1fr}}
+/* QR, konfirmasi */
 .qr-box{display:grid;place-items:center;padding:18px;border-radius:var(--r-md);background:#fff;margin:14px auto 0;max-width:330px;box-shadow:0 0 0 1px rgba(255,255,255,.4),0 0 60px -14px rgba(102,232,212,.45)}
 .qr-box img{display:block;width:100%;max-width:290px;height:auto;image-rendering:pixelated}
 .qr-box p{color:#36505F;font-size:14px;text-align:center}
@@ -574,6 +592,11 @@ ol.alpha li{padding-left:4px}
 .poster .p-url{margin-top:10mm;font:11pt var(--f-text);color:#4A6676;word-break:break-all}
 
 #printArea{display:none}
+#pdfFit{display:none}
+#pdfFit.measure{display:block;position:fixed;left:-10000px;top:0;width:170mm;visibility:hidden}
+#pdfFit.measure .kertas{width:170mm;min-height:0;padding:0}
+#pdfHost{position:fixed;left:0;top:0;width:210mm;visibility:hidden;pointer-events:none;z-index:-5}
+#pdfHost .kertas{height:297mm;overflow:hidden}
 #printArea.measure{display:block;position:fixed;left:-10000px;top:0;width:170mm;visibility:hidden}
 #printArea.measure .kertas{width:170mm;min-height:0;padding:0}
 
@@ -628,6 +651,9 @@ ol.alpha li{padding-left:4px}
     <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
     <symbol id="i-cross" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M10 6.8h4v3.2h3.2v4H14v3.2h-4V14H6.8v-4H10Z"/></symbol>
     <symbol id="i-form" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></symbol>
+    <symbol id="i-word" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/><path d="m8.5 12 1.2 5 1.6-3.6 1.6 3.6 1.2-5"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
     <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
   </defs>
 </svg>
@@ -638,23 +664,27 @@ ol.alpha li{padding-left:4px}
 <!-- ═══════════════════════════ RESPONDEN: MENU ═══════════════════════════ -->
 <main id="vMenu" class="view" hidden>
   <div class="shell">
-    <header>
-      <button class="brand brand-btn" data-act="admin" aria-label="Biddokkes Polda NTB">
+    <header class="top">
+      <div class="brand">
         <span class="logo"><img src="logo-biddokkes.png" alt="" onerror="this.parentNode.classList.add('nologo');this.remove()"><svg class="i"><use href="#i-cross"/></svg></span>
         <span class="brand-t"><b>Biddokkes Polda NTB</b><small>Bidang Kedokteran dan Kesehatan</small></span>
-      </button>
+      </div>
+      <nav class="topnav" aria-label="Halaman">
+        <a href="#/" class="on" aria-current="page"><svg class="i"><use href="#i-form"/></svg>Buat surat</a>
+        <a href="#/data"><svg class="i"><use href="#i-list"/></svg>Data surat</a>
+      </nav>
     </header>
     <div class="menu-grid">
       <section class="hero" aria-labelledby="hTitle">
         <h1 class="h-title" id="hTitle">Layanan Surat<br>Keterangan Sehat</h1>
         <svg class="ecg" viewBox="0 0 600 66" aria-hidden="true"><path class="base" d="M0 40 L18 40 Q24 31 30 40 L36 40 L40 46 L46 6 L52 60 L57 40 L68 40 Q80 26 92 40 L150 40 L168 40 Q174 31 180 40 L186 40 L190 46 L196 6 L202 60 L207 40 L218 40 Q230 26 242 40 L300 40 L318 40 Q324 31 330 40 L336 40 L340 46 L346 6 L352 60 L357 40 L368 40 Q380 26 392 40 L450 40 L468 40 Q474 31 480 40 L486 40 L490 46 L496 6 L502 60 L507 40 L518 40 Q530 26 542 40 L600 40"/><path class="sweep" pathLength="1000" d="M0 40 L18 40 Q24 31 30 40 L36 40 L40 46 L46 6 L52 60 L57 40 L68 40 Q80 26 92 40 L150 40 L168 40 Q174 31 180 40 L186 40 L190 46 L196 6 L202 60 L207 40 L218 40 Q230 26 242 40 L300 40 L318 40 Q324 31 330 40 L336 40 L340 46 L346 6 L352 60 L357 40 L368 40 Q380 26 392 40 L450 40 L468 40 Q474 31 480 40 L486 40 L490 46 L496 6 L502 60 L507 40 L518 40 Q530 26 542 40 L600 40"/></svg>
-        <p class="h-lead">Pilih surat yang Anda perlukan, isi formulirnya, lalu konfirmasikan kepada petugas untuk dicetak.</p>
-        <ol class="steps"><li><b>1</b>Pilih surat</li><li><b>2</b>Isi formulir</li><li><b>3</b>Konfirmasi ke petugas</li></ol>
+        <p class="h-lead">Pilih surat yang Anda perlukan dan isi formulirnya. Surat langsung terbit bernomor dan bisa diunduh dalam PDF atau Word.</p>
+        <ol class="steps"><li><b>1</b>Pilih surat</li><li><b>2</b>Isi formulir</li><li><b>3</b>Surat langsung terbit</li></ol>
       </section>
       <div class="menu-side">
         <nav class="channels" id="menuList" aria-label="Jenis surat"></nav>
         <div class="sysbar"><span class="sys" id="sys" data-s="wait" role="status"><span class="spin" aria-hidden="true"></span><span>Menghubungkan ke server</span></span><span id="clock"></span></div>
-        <p class="foot-note">Data yang Anda isi hanya dipakai untuk penerbitan surat oleh Biddokkes Polda NTB.</p>
+        <p class="foot-note">Satu nama dan NRP hanya bisa mengisi formulir yang sama sekali dalam sehari. Data hanya dipakai untuk penerbitan surat oleh Biddokkes Polda NTB.</p>
       </div>
     </div>
   </div>
@@ -670,7 +700,7 @@ ol.alpha li{padding-left:4px}
     <div class="prog" aria-hidden="true"><span id="fBar"></span></div>
     <div class="note-bar" id="fNote" hidden><svg class="i"><use href="#i-info"/></svg><span>Isian sebelumnya dipulihkan dari perangkat ini.</span><button data-act="clearDraft">Kosongkan formulir</button></div>
     <div class="form-grid">
-      <aside class="rail" aria-label="Bagian formulir"><ol id="fRail"></ol><p class="rail-note">Isian tersimpan otomatis di perangkat ini sampai formulir terkirim.</p></aside>
+      <aside class="rail" aria-label="Bagian formulir"><ol id="fRail"></ol><p class="rail-note">Isian tersimpan otomatis di perangkat ini sampai surat terbit.</p></aside>
       <form id="fBody" novalidate autocomplete="on"></form>
     </div>
   </div>
@@ -680,87 +710,68 @@ ol.alpha li{padding-left:4px}
   </div></div>
 </main>
 
-<!-- ═══════════════════════════ RESPONDEN: SELESAI ════════════════════════ -->
+<!-- ═══════════════════════════ SURAT TERBIT ════════════════════════════ -->
 <main id="vDone" class="view" hidden>
   <div class="done">
     <div class="done-mark" aria-hidden="true"><svg class="i"><use href="#i-check"/></svg></div>
-    <h1 tabindex="-1" id="doneTitle">Formulir terkirim</h1>
+    <h1 tabindex="-1" id="doneTitle">Surat sudah terbit</h1>
     <p class="done-msg">Silahkan Konfirmasi Kepada Petugas setelah mengisi Link ini, Terimakasih</p>
+    <div class="done-no"><span>Nomor surat</span><b id="doneNo"></b></div>
     <dl class="rv done-sum" id="doneSum"></dl>
-    <div class="done-act"><button class="btn btn-pri" data-act="home">Ajukan surat lain</button></div>
-  </div>
-</main>
-
-<!-- ═══════════════════════════ PETUGAS: MASUK ════════════════════════════ -->
-<main id="vLogin" class="view" hidden>
-  <div class="login">
-    <div class="login-card" id="loginCard">
-      <div class="brand">
-        <span class="logo"><img src="logo-biddokkes.png" alt="" onerror="this.parentNode.classList.add('nologo');this.remove()"><svg class="i"><use href="#i-cross"/></svg></span>
-        <span class="brand-t"><b>Biddokkes Polda NTB</b><small>Bidang Kedokteran dan Kesehatan</small></span>
-      </div>
-      <h1>Panel petugas</h1>
-      <p>Masuk untuk melihat pengajuan dan mencetak surat.</p>
-      <form id="loginForm" novalidate>
-        <div class="field" id="lField">
-          <label for="lPw">Password</label>
-          <div class="pw"><input class="inp" id="lPw" type="password" autocomplete="current-password" aria-describedby="lErr"><button type="button" class="pw-eye" data-act="togglePw" aria-label="Tampilkan password"><svg class="i"><use href="#i-eye"/></svg></button></div>
-          <p class="err" id="lErr" role="alert"></p>
-        </div>
-        <label class="check"><input type="checkbox" id="lRemember" checked><span>Tetap masuk di perangkat ini selama 7 hari</span></label>
-        <button class="btn btn-pri btn-block" type="submit" id="bLogin">Masuk</button>
-      </form>
-      <button class="btn-link" data-act="home"><svg class="i"><use href="#i-back"/></svg>Kembali ke formulir</button>
+    <div class="done-dl">
+      <button class="btn btn-pri" data-act="pdf"><svg class="i"><use href="#i-download"/></svg>Unduh PDF</button>
+      <button class="btn" data-act="word"><svg class="i"><use href="#i-word"/></svg>Unduh Word</button>
+      <button class="btn" data-act="print"><svg class="i"><use href="#i-print"/></svg>Cetak</button>
     </div>
+    <p class="done-arch" id="doneArch" role="status"></p>
+    <div class="done-act"><a class="btn-link" href="#/data"><svg class="i"><use href="#i-list"/></svg>Lihat data surat</a><button class="btn-link" data-act="home"><svg class="i"><use href="#i-plus"/></svg>Buat surat lain</button></div>
   </div>
 </main>
 
 <!-- ═══════════════════════════ PETUGAS: DASBOR ═══════════════════════════ -->
 <div id="vAdmin" class="view" hidden>
   <div class="adm" id="adm">
-    <aside class="side" id="side" aria-label="Menu petugas">
+    <aside class="side" id="side" aria-label="Menu data surat">
       <div class="brand">
         <span class="logo"><img src="logo-biddokkes.png" alt="" onerror="this.parentNode.classList.add('nologo');this.remove()"><svg class="i"><use href="#i-cross"/></svg></span>
-        <span class="brand-t"><b>Biddokkes Polda NTB</b><small>Panel petugas</small></span>
+        <span class="brand-t"><b>Biddokkes Polda NTB</b><small>Data surat</small></span>
       </div>
       <p class="side-h">Jenis surat</p>
       <nav id="sideNav" aria-label="Jenis surat"></nav>
+      <a class="side-new" href="#/"><svg class="i"><use href="#i-plus"/></svg>Buat surat baru</a>
       <p class="side-h">Alat</p>
       <button class="side-link" data-act="qr"><svg class="i"><use href="#i-qr"/></svg>QR code formulir</button>
-      <button class="side-link" data-act="settings"><svg class="i"><use href="#i-sliders"/></svg>Pengaturan</button>
+      <a class="side-link" id="folderLink" href="#" target="_blank" rel="noopener" hidden><svg class="i"><use href="#i-doc"/></svg>Folder arsip PDF<svg class="i ext"><use href="#i-ext"/></svg></a>
       <a class="side-link" id="sheetLink" href="#" target="_blank" rel="noopener" hidden><svg class="i"><use href="#i-sheet"/></svg>Buka spreadsheet<svg class="i ext"><use href="#i-ext"/></svg></a>
-      <a class="side-link" href="#/" target="_blank" rel="noopener"><svg class="i"><use href="#i-form"/></svg>Halaman formulir<svg class="i ext"><use href="#i-ext"/></svg></a>
-      <div class="side-foot"><button class="side-link" data-act="logout"><svg class="i"><use href="#i-logout"/></svg>Keluar</button></div>
+      <p class="side-foot">Folder arsip dan spreadsheet hanya bisa dibuka akun Google pemilik.</p>
     </aside>
     <div class="scrim" data-act="unmenu"></div>
     <main class="main">
       <header class="topbar">
         <div class="tb-t">
           <button class="icon-btn menu-btn" data-act="menu" aria-label="Buka menu"><svg class="i"><use href="#i-menu"/></svg></button>
-          <div><h1 id="aTitle">Surat Keterangan Sehat</h1><p id="aSub"></p></div>
+          <div class="tb-h"><h1 id="aTitle">Surat Keterangan Sehat</h1><p id="aSub"></p></div>
+          <a class="icon-btn tb-new" href="#/" aria-label="Buat surat baru" title="Buat surat baru"><svg class="i"><use href="#i-plus"/></svg></a>
         </div>
         <div class="tb-r">
           <button class="sync" id="sync" data-s="busy" data-act="refresh" title="Perbarui data sekarang"><svg viewBox="0 0 40 16" aria-hidden="true"><path pathLength="1000" d="M0 9 L10 9 L13 9 L15 11 L18 2 L21 14 L23 9 L28 9 Q31 6 34 9 L40 9"/></svg><span id="syncTxt" role="status">Memuat data</span><svg class="i rf" aria-hidden="true"><use href="#i-refresh"/></svg></button>
           <select class="inp period" id="period" aria-label="Periode data">
             <option value="30">30 hari</option><option value="90">90 hari</option><option value="365">1 tahun</option><option value="0">Semua data</option>
           </select>
-          <button class="icon-btn" data-act="sound" id="bSound" aria-pressed="false" aria-label="Suara saat ada pengajuan baru" title="Suara saat ada pengajuan baru"><svg class="i"><use href="#i-belloff"/></svg></button>
+          <button class="icon-btn" data-act="sound" id="bSound" aria-pressed="false" aria-label="Suara saat ada surat baru" title="Suara saat ada surat baru"><svg class="i"><use href="#i-belloff"/></svg></button>
         </div>
       </header>
       <section class="board" id="board" aria-label="Ringkasan"></section>
       <div class="tabs-m" id="tabsM" role="navigation" aria-label="Jenis surat"></div>
       <div class="toolbar">
-        <div class="seg" id="segStatus" role="group" aria-label="Saring status">
-          <button data-act="status" data-s="" class="on">Semua</button><button data-act="status" data-s="pend">Menunggu</button><button data-act="status" data-s="done">Terbit</button>
-        </div>
-        <label class="search"><span class="sr">Cari pengajuan</span><svg class="i"><use href="#i-search"/></svg><input class="inp" id="q" type="search" placeholder="Cari nama, NRP, atau nomor surat" autocomplete="off"><span class="kbd" aria-hidden="true">/</span></label>
+        <label class="search"><span class="sr">Cari surat</span><svg class="i"><use href="#i-search"/></svg><input class="inp" id="q" type="search" placeholder="Cari nama, NRP, atau nomor surat" autocomplete="off"><span class="kbd" aria-hidden="true">/</span></label>
       </div>
       <div class="list" id="list"></div>
     </main>
   </div>
   <div class="selbar" id="selBar" role="region" aria-label="Aksi data terpilih">
     <span><b id="selN">0</b> dipilih</span>
-    <button class="btn btn-pri" data-act="issueSel" id="bIssueSel"><svg class="i"><use href="#i-print"/></svg><span id="selIssueTxt">Terbitkan &amp; cetak</span></button>
+    <button class="btn" data-act="printSel"><svg class="i"><use href="#i-print"/></svg><span class="t">Cetak</span></button>
     <button class="btn btn-danger" data-act="delSel"><svg class="i"><use href="#i-trash"/></svg><span class="t">Hapus</span></button>
     <button class="icon-btn sm" data-act="clearSel" aria-label="Batalkan pilihan"><svg class="i"><use href="#i-x"/></svg></button>
   </div>
@@ -769,38 +780,31 @@ ol.alpha li{padding-left:4px}
 <!-- ═══════════════════════════ MODAL ═════════════════════════════════════ -->
 <div class="modal" id="mReview" role="dialog" aria-modal="true" aria-labelledby="rvT" hidden>
   <div class="m-panel" tabindex="-1">
-    <div class="m-head"><div><h2 id="rvT">Periksa kembali data Anda</h2><p>Data ini akan tercetak di surat. Pastikan ejaan nama, NRP, dan tanggal sudah benar.</p></div></div>
-    <div class="m-body"><div id="rvBody"></div><p class="rv-slow" id="rvSlow" hidden><span class="spin"></span>Koneksi agak lambat. Tetap di halaman ini, formulir sedang dikirim.</p><div class="rv-err" id="rvErr" role="alert" hidden><svg class="i" aria-hidden="true"><use href="#i-alert"/></svg><span></span></div></div>
-    <div class="m-foot"><button class="btn" data-act="close">Ubah data</button><button class="btn btn-pri" data-act="send" id="bSend">Kirim formulir</button></div>
+    <div class="m-head"><div><h2 id="rvT">Periksa kembali data Anda</h2><p>Surat langsung terbit bernomor setelah dikirim dan tidak bisa diubah. Pastikan ejaan nama, NRP, dan tanggal sudah benar.</p></div></div>
+    <div class="m-body"><div id="rvBody"></div><p class="rv-slow" id="rvSlow" hidden><span class="spin"></span>Koneksi agak lambat. Tetap di halaman ini, surat sedang diterbitkan.</p><div class="rv-err" id="rvErr" role="alert" hidden><svg class="i" aria-hidden="true"><use href="#i-alert"/></svg><span></span></div></div>
+    <div class="m-foot"><button class="btn" data-act="close">Ubah data</button><button class="btn btn-pri" data-act="send" id="bSend">Kirim &amp; terbitkan</button></div>
   </div>
 </div>
 
-<div class="modal ws" id="mDetail" role="dialog" aria-modal="true" aria-labelledby="dTitle" data-pane="form" hidden>
+<div class="modal ws" id="mDetail" role="dialog" aria-modal="true" aria-labelledby="dTitle" data-pane="prev" hidden>
   <div class="ws-panel" tabindex="-1">
     <header class="ws-head">
       <button class="icon-btn" data-act="closeDetail" aria-label="Tutup"><svg class="i"><use href="#i-x"/></svg></button>
       <div class="ws-t"><h2 id="dTitle"></h2><p id="dSub"></p></div>
       <span id="dStatus"></span>
-      <div class="seg ws-seg" role="group" aria-label="Tampilan"><button data-act="pane" data-pane="form" class="on">Data</button><button data-act="pane" data-pane="prev">Pratinjau surat</button></div>
+      <div class="seg ws-seg" role="group" aria-label="Tampilan"><button data-act="pane" data-pane="prev" class="on">Surat</button><button data-act="pane" data-pane="form">Data</button></div>
     </header>
     <div class="ws-body">
       <div class="ws-form" id="dForm"></div>
-      <div class="ws-prev"><div class="prev-h"><span><svg class="i"><use href="#i-doc"/></svg>Pratinjau surat A4</span><span id="prevNote"></span></div><div class="pwrap" id="pWrap"></div></div>
+      <div class="ws-prev"><div class="prev-h"><span><svg class="i"><use href="#i-doc"/></svg>Pratinjau surat A4</span><span id="prevNote">Sama dengan hasil unduhan PDF</span></div><div class="pwrap" id="pWrap"></div></div>
     </div>
     <footer class="ws-foot">
       <button class="btn btn-danger" data-act="delCurrent"><svg class="i"><use href="#i-trash"/></svg>Hapus</button>
       <span class="sp"></span>
-      <button class="btn" data-act="saveDetail" id="bSave"><svg class="i"><use href="#i-save"/></svg>Simpan perubahan</button>
-      <button class="btn btn-pri" data-act="issue" id="bIssue"><svg class="i"><use href="#i-print"/></svg><span>Terbitkan &amp; cetak</span></button>
+      <button class="btn" data-act="print"><svg class="i"><use href="#i-print"/></svg>Cetak</button>
+      <button class="btn" data-act="word"><svg class="i"><use href="#i-word"/></svg>Unduh Word</button>
+      <button class="btn btn-pri" data-act="pdf"><svg class="i"><use href="#i-download"/></svg>Unduh PDF</button>
     </footer>
-  </div>
-</div>
-
-<div class="modal" id="mSet" role="dialog" aria-modal="true" aria-labelledby="setT" hidden>
-  <div class="m-panel wide" tabindex="-1">
-    <div class="m-head"><div><h2 id="setT">Pengaturan</h2><p>Berlaku untuk surat yang dicetak setelah disimpan. Semua nilai juga tersimpan di tab Pengaturan pada Spreadsheet.</p></div><button class="icon-btn" data-act="close" aria-label="Tutup"><svg class="i"><use href="#i-x"/></svg></button></div>
-    <div class="m-body" id="setBody"></div>
-    <div class="m-foot"><button class="btn" data-act="close">Batal</button><button class="btn btn-pri" data-act="saveSettings" id="bSetSave">Simpan pengaturan</button></div>
   </div>
 </div>
 
@@ -828,6 +832,8 @@ ol.alpha li{padding-left:4px}
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="tip" id="tip" role="tooltip" hidden></div>
 <div id="printArea" aria-hidden="true"></div>
+<div id="pdfFit" aria-hidden="true"></div>
+<div id="pdfHost" aria-hidden="true"></div>
 
 <script>
 (function () {
@@ -926,7 +932,6 @@ const JENIS = Object.keys(FORMS);
 const SLUG = { sks: 'SKS', nikah: 'NIKAH', senpi: 'SENPI' };
 const inputKeys = j => FORMS[j].sections.reduce((a, s) => a.concat(s[1]), []);
 const optList = f => (f.options || []).map(o => Array.isArray(o) ? o : [o, o]);
-const isPending = r => !r.nomorSurat;
 const DEFAULT_SET = {
   FORMAT_NOMOR_SKS: 'R/{N}/{ROMAWI}/KES.3./{TAHUN}/Biddokkes', FORMAT_NOMOR_NIKAH: 'R/{N}/{ROMAWI}/KES.3/{TAHUN}/Biddokkes', FORMAT_NOMOR_SENPI: 'SKHPK/{N}/{ROMAWI}/KES./{TAHUN}/BIDDOKKES',
   NOMOR_TERAKHIR_SKS: '0', NOMOR_TERAKHIR_NIKAH: '0', NOMOR_TERAKHIR_SENPI: '0', TAHUN_NOMOR: '', RESET_NOMOR_TAHUNAN: 'YA',
@@ -962,13 +967,13 @@ function toast(msg, type, ms) {
   el._t = setTimeout(el._hide, dur);
 }
 function clearToasts(type) { Array.prototype.slice.call($('#toasts').children).forEach(x => { if (!type || x._type === type) { clearTimeout(x._t); x._hide(); } }); }
-function fail(e) { if (!e || e.code !== 'AUTH') toast((e && e.message) || 'Terjadi kesalahan.', 'err'); }
+function fail(e) { toast((e && e.message) || 'Terjadi kesalahan.', 'err'); }
 function busy(btn, on, label) {
   if (!btn) return;
   if (on) {
     if (btn.dataset.busy) return;
     btn.dataset.busy = '1'; btn.dataset.html = btn.innerHTML; btn.disabled = true;
-    btn.innerHTML = '<span class="spin" aria-hidden="true"></span><span>' + esc(label || 'Memproses') + '</span>';
+    btn.innerHTML = btn.classList.contains('icon-btn') ? '<span class="spin" aria-hidden="true"></span>' : '<span class="spin" aria-hidden="true"></span><span>' + esc(label || 'Memproses') + '</span>';
   } else {
     if (!btn.dataset.busy) return;
     btn.disabled = false; btn.innerHTML = btn.dataset.html;
@@ -1003,7 +1008,7 @@ function closeTop(id) {
   id = id || MODALS[MODALS.length - 1];
   if (!id) return;
   if (id === 'mAsk') { if (ASK) ASK(false); return; }
-  if (id === 'mDetail') { requestCloseDetail(); return; }
+  if (id === 'mDetail') { closeDetail(); return; }
   if (id === 'mReview' && F.sending) return;
   closeModal(id);
 }
@@ -1040,7 +1045,6 @@ async function api(action, payload, opt) {
   opt = opt || {};
   if (API_STATE !== 'ok') throw new ApiError(API_STATE === 'dev' ? 'API_URL di index.html masih memakai URL /dev. Gunakan URL deployment yang berakhiran /exec.' : 'Alamat server belum diatur. Isi API_URL di index.html dengan URL Web App Apps Script.', 'CONFIG');
   const body = Object.assign({ action: action }, payload || {});
-  if (opt.auth) body.token = ADM.token;
   const retries = opt.retries == null ? 1 : opt.retries;
   let last = null;
   for (let i = 0; i <= retries; i++) {
@@ -1056,9 +1060,7 @@ async function api(action, payload, opt) {
         throw new ApiError(/^\s*</.test(text) ? 'Server Apps Script menolak akses. Pastikan deployment diatur "Siapa saja", lalu buat versi baru.' : 'Balasan server tidak dikenali (kode ' + r.status + ').', 'BADRESP');
       }
       if (!j || !j.ok) {
-        const e = new ApiError((j && j.error) || 'Terjadi kesalahan di server.', j && j.code);
-        if (e.code === 'AUTH' && opt.auth) onAuthExpired();
-        throw e;
+        throw new ApiError((j && j.error) || 'Terjadi kesalahan di server.', j && j.code);
       }
       return j;
     } catch (err) {
@@ -1188,6 +1190,7 @@ async function loadConfig() {
   try {
     const r = await api('config', {}, { retries: 1, timeout: 20000 });
     CFG = { kesatuan: Array.isArray(r.kesatuan) ? r.kesatuan : [], today: r.today };
+    setSettings(r.settings);
     store.set('suket_cfg', CFG);
     setSys('ok', 'Server siap menerima formulir');
     refreshKesatuanField();
@@ -1270,23 +1273,37 @@ async function send() {
   if (F.sending || !F.data) return;
   F.sending = true;
   $('#rvErr').hidden = true;
-  busy(btn, true, 'Mengirim');
+  busy(btn, true, 'Menerbitkan surat');
   const slow = setTimeout(() => { $('#rvSlow').hidden = false; }, 6000);
   try {
-    await api('submit', { jenis: F.j, id: F.id, data: F.data }, { retries: 2, timeout: 25000 });
+    const res = await api('submit', { jenis: F.j, id: F.id, data: F.data }, { retries: 2, timeout: 30000 });
+    setSettings(res.settings);
+    const rec = res.record;
     store.del('suket_draft_' + F.j);
     const ident = Object.assign({}, store.get('suket_ident', true) || {});
     IDENT_KEYS.forEach(k => { if (F.data[k]) ident[k] = F.data[k]; });
     store.set('suket_ident', ident, true);
-    const d = new Date();
-    DONE = { j: F.j, nama: F.data.nama, when: `${d.getDate()} ${BULAN[d.getMonth()]} ${d.getFullYear()}, pukul ${pad(d.getHours())}.${pad(d.getMinutes())}` };
+    DONE = { j: F.j, rec: rec, arch: rec.pdf ? 'ok' : 'busy' };
+    upsertLocal(F.j, rec);
+    ADM.rev = null; ADM.mut++;
+    persistCache();
     F.built = false;
     F.sending = false;
     closeModal('mReview');
     location.replace('#/selesai');
+    if (!rec.pdf) {
+      const out = await archiveRecs(DONE.j, [rec], { silent: true });
+      if (DONE && DONE.rec.id === rec.id) { DONE.arch = out && out.ok ? 'ok' : 'err'; DONE.err = out && out.last ? out.last.message : ''; renderDoneArch(); }
+    }
   } catch (e) {
     const box = $('#rvErr');
-    box.querySelector('span').textContent = e.message + ' Data Anda masih tersimpan, tekan Kirim formulir untuk mencoba lagi.';
+    if (e.code === 'DUPLICATE') {
+      box.querySelector('span').innerHTML = esc(e.message) + ' <a href="#/data" class="rv-link">Lihat data surat</a>';
+      box.classList.add('is-dup');
+    } else {
+      box.querySelector('span').textContent = e.message + ' Data Anda masih tersimpan, tekan Kirim & terbitkan untuk mencoba lagi.';
+      box.classList.remove('is-dup');
+    }
     box.hidden = false;
     box.scrollIntoView({ block: 'nearest' });
   } finally {
@@ -1297,13 +1314,25 @@ async function send() {
   }
 }
 function renderDone() {
-  $('#doneSum').innerHTML = `<div><dt>Jenis surat</dt><dd>${esc(FORMS[DONE.j].title)}</dd></div><div><dt>Nama</dt><dd>${esc(DONE.nama)}</dd></div><div><dt>Dikirim</dt><dd>${esc(DONE.when)}</dd></div>`;
+  const r = DONE.rec;
+  $('#doneNo').textContent = r.nomorSurat || '-';
+  $('#doneSum').innerHTML = `<div><dt>Jenis surat</dt><dd>${esc(FORMS[DONE.j].title)}</dd></div><div><dt>Nama</dt><dd>${esc(r.nama)}</dd></div><div><dt>NRP/NIP</dt><dd>${esc(r.nrp)}</dd></div><div><dt>Terbit</dt><dd>${esc(fmtWaktu(r.terbitAt || r.waktu))}</dd></div>`;
+  renderDoneArch();
   show('vDone');
   setTimeout(() => { try { $('#doneTitle').focus({ preventScroll: true }); } catch (_) {} }, 50);
 }
+function renderDoneArch() {
+  const el = $('#doneArch');
+  if (!el || !DONE) return;
+  const st = DONE.rec.pdf ? 'ok' : DONE.arch;
+  el.dataset.s = st;
+  el.innerHTML = st === 'ok' ? '<svg class="i" aria-hidden="true"><use href="#i-check"/></svg><span>PDF surat sudah tersimpan di Google Drive Biddokkes.</span>'
+    : st === 'err' ? '<svg class="i" aria-hidden="true"><use href="#i-alert"/></svg><span>PDF belum tersimpan ke Drive' + (DONE.err ? ' (' + esc(DONE.err) + ')' : '') + '. Akan disimpan otomatis saat halaman Data surat dibuka. Surat tetap bisa diunduh.</span>'
+      : '<span class="spin" aria-hidden="true"></span><span>Menyimpan PDF surat ke Google Drive…</span>';
+}
 
 /* ─────────────────────────────── Navigasi ─────────────────────────── */
-const VIEWS = ['vMenu', 'vForm', 'vDone', 'vLogin', 'vAdmin'];
+const VIEWS = ['vMenu', 'vForm', 'vDone', 'vAdmin'];
 function show(id) {
   const prev = document.body.dataset.view;
   VIEWS.forEach(v => { $('#' + v).hidden = v !== id; });
@@ -1315,69 +1344,27 @@ function show(id) {
 function route() {
   const h = location.hash || '#/';
   MODALS.slice().forEach(id => { if (id !== 'mAsk') closeModal(id); });
-  if (h === '#admin' || h === '#petugas') { if (ADM.token) enterAdmin(); else showLogin(); return; }
+  if (h === '#admin' || h === '#petugas' || h === '#data') { location.replace('#/data'); return; }
+  if (h === '#/data') { enterData(); return; }
   const m = /^#\/(sks|nikah|senpi)$/.exec(h);
   if (m) { openForm(SLUG[m[1]]); return; }
   if (h === '#/selesai') { if (DONE) renderDone(); else location.replace('#/'); return; }
   show('vMenu');
 }
 
-/* ─────────────────────────────── Petugas ──────────────────────────── */
+/* ─────────────────────────────── Data surat ───────────────────────── */
 const ADM = {
-  token: null, remember: true, data: { SKS: [], NIKAH: [], SENPI: [] }, rev: null, days: 90, tab: 'SKS',
-  status: '', q: '', limit: PAGE, sel: new Set(), settings: Object.assign({}, DEFAULT_SET), sheetUrl: '',
-  today: todayISO(), loaded: false, syncing: false, again: false, mut: 0, busy: 0, pollT: 0, lastSync: 0, sound: false, fresh: new Set()
+  data: { SKS: [], NIKAH: [], SENPI: [] }, rev: null, days: 90, tab: 'SKS',
+  q: '', limit: PAGE, sel: new Set(), settings: Object.assign({}, DEFAULT_SET, store.get('suket_set') || {}), sheetUrl: '',
+  today: todayISO(), loaded: false, syncing: false, again: false, mut: 0, busy: 0, pollT: 0, lastSync: 0, sound: false, fresh: new Set(),
+  healing: new Set()
 };
-function loadToken() {
-  const a = store.get('suket_tok'), b = store.get('suket_tok', true), t = a || b;
-  if (!t || !t.token || !t.exp || t.exp < Date.now() + 60000) { store.del('suket_tok'); return; }
-  ADM.token = t.token; ADM.remember = !!a;
+function setSettings(s) {
+  if (!s) return;
+  ADM.settings = Object.assign({}, DEFAULT_SET, s);
+  store.set('suket_set', ADM.settings);
 }
-function saveToken(token, exp, remember) {
-  store.del('suket_tok');
-  store.set('suket_tok', { token: token, exp: exp }, !remember);
-  ADM.token = token; ADM.remember = !!remember;
-}
-function clearSession() {
-  store.del('suket_tok'); store.del('suket_cache');
-  ADM.token = null; ADM.loaded = false; ADM.rev = null; ADM.sel.clear();
-  ADM.data = { SKS: [], NIKAH: [], SENPI: [] };
-  stopPoll();
-}
-function onAuthExpired() {
-  if (!ADM.token) return;
-  clearSession();
-  MODALS.slice().forEach(id => closeModal(id));
-  toast('Sesi berakhir. Silakan masuk kembali.', 'warn');
-  if (location.hash === '#admin' || location.hash === '#petugas') showLogin(); else location.hash = '#admin';
-}
-function showLogin() {
-  show('vLogin');
-  setErr($('#lField'), '');
-  setTimeout(() => { try { $('#lPw').focus(); } catch (_) {} }, 60);
-}
-async function login() {
-  const pw = $('#lPw').value, btn = $('#bLogin');
-  if (!pw) { setErr($('#lField'), 'Masukkan password.'); return; }
-  const remember = $('#lRemember').checked;
-  busy(btn, true, 'Memeriksa');
-  try {
-    const r = await api('login', { password: pw, remember: remember }, { retries: 1 });
-    saveToken(r.token, r.exp, remember);
-    $('#lPw').value = '';
-    setErr($('#lField'), '');
-    enterAdmin();
-  } catch (e) {
-    setErr($('#lField'), e.message);
-    const c = $('#loginCard'); c.classList.remove('shake'); void c.offsetWidth; c.classList.add('shake');
-  } finally { busy(btn, false); }
-}
-function logout() {
-  clearSession();
-  location.hash = '#/';
-  toast('Anda sudah keluar dari panel petugas.', 'ok');
-}
-function enterAdmin() {
+function enterData() {
   show('vAdmin');
   if (!ADM.loaded) loadCache();
   renderAll();
@@ -1385,36 +1372,37 @@ function enterAdmin() {
   startPoll();
 }
 function loadCache() {
-  const c = store.get('suket_cache', !ADM.remember);
-  if (!c || c.v !== 2 || c.days !== ADM.days || !c.data) return;
+  const c = store.get('suket_cache');
+  if (!c || c.v !== 3 || c.days !== ADM.days || !c.data) return;
   if (!JENIS.every(j => Array.isArray(c.data[j]))) return;
   ADM.data = c.data; ADM.rev = c.rev; ADM.today = c.today || todayISO();
-  ADM.settings = Object.assign({}, DEFAULT_SET, c.settings || {}); ADM.sheetUrl = c.sheetUrl || '';
+  ADM.sheetUrl = c.sheetUrl || '';
   ADM.loaded = true;
 }
 function persistCache() {
-  if (!ADM.token) return;
-  store.set('suket_cache', { v: 2, rev: ADM.rev, days: ADM.days, today: ADM.today, data: ADM.data, settings: ADM.settings, sheetUrl: ADM.sheetUrl }, !ADM.remember);
+  if (!ADM.loaded) return;
+  store.set('suket_cache', { v: 3, rev: ADM.rev, days: ADM.days, today: ADM.today, data: ADM.data, sheetUrl: ADM.sheetUrl });
 }
 async function sync(force, manual) {
-  if (!ADM.token) return;
   if (ADM.syncing) { ADM.again = true; return; }
   ADM.syncing = true;
   setSync('busy');
   const m0 = ADM.mut;
   try {
-    const r = await api('data', { rev: force ? null : ADM.rev, days: ADM.days }, { auth: true, retries: 1, timeout: 45000 });
+    const r = await api('data', { rev: force ? null : ADM.rev, days: ADM.days }, { retries: 1, timeout: 45000 });
     if (ADM.mut !== m0) { ADM.again = true; ADM.rev = null; }
     else if (!r.same) applyData(r);
     ADM.lastSync = Date.now();
     setSync('ok');
     pulseSync();
+    healArchive();
   } catch (e) {
-    if (e.code !== 'AUTH') { setSync('err', e.message); if (manual || !ADM.loaded) toast(e.message, 'err'); }
+    setSync('err', e.message);
+    if (manual || !ADM.loaded) toast(e.message, 'err');
   } finally {
     ADM.syncing = false;
     $('#list').classList.remove('stale');
-    if (ADM.again && ADM.token) { ADM.again = false; setTimeout(() => sync(false), 80); }
+    if (ADM.again) { ADM.again = false; setTimeout(() => sync(false), 80); }
   }
 }
 function applyData(r) {
@@ -1431,14 +1419,13 @@ function applyData(r) {
     JENIS.forEach(j => next[j].forEach(x => { if (!old.has(x.id)) fresh.push(x); }));
   }
   ADM.data = next; ADM.rev = r.rev; ADM.today = r.today || todayISO();
-  ADM.settings = Object.assign({}, DEFAULT_SET, r.settings || {});
+  setSettings(r.settings);
   if (r.sheetUrl) ADM.sheetUrl = r.sheetUrl;
   ADM.loaded = true;
   ADM.fresh = new Set(fresh.map(x => x.id));
   persistCache();
-  const pf = fresh.filter(isPending);
-  if (pf.length) {
-    toast(pf.length === 1 ? 'Pengajuan baru masuk: ' + pf[0].nama : pf.length + ' pengajuan baru masuk.', 'info');
+  if (fresh.length && document.body.dataset.view === 'vAdmin') {
+    toast(fresh.length === 1 ? 'Surat baru masuk: ' + fresh[0].nama : fresh.length + ' surat baru masuk.', 'info');
     if (ADM.sound) beep();
   }
   renderAll();
@@ -1448,8 +1435,8 @@ function applyData(r) {
 function startPoll() {
   stopPoll();
   const tick = async () => {
-    if (document.body.dataset.view === 'vAdmin' && ADM.token && document.visibilityState !== 'hidden' && navigator.onLine !== false && !ADM.busy) await sync(false);
-    if (document.body.dataset.view === 'vAdmin' && ADM.token) ADM.pollT = setTimeout(tick, POLL_MS);
+    if (document.body.dataset.view === 'vAdmin' && document.visibilityState !== 'hidden' && navigator.onLine !== false && !ADM.busy) await sync(false);
+    if (document.body.dataset.view === 'vAdmin') ADM.pollT = setTimeout(tick, POLL_MS);
   };
   ADM.pollT = setTimeout(tick, POLL_MS);
 }
@@ -1464,12 +1451,11 @@ function setSync(state, msg) {
 function pulseSync() { const el = $('#sync'); el.classList.remove('beat'); void el.offsetWidth; el.classList.add('beat'); }
 function mutated(res) {
   ADM.mut++;
-  if (res && res.counter) { ADM.settings['NOMOR_TERAKHIR_' + res.counter.jenis] = String(res.counter.last); ADM.settings.TAHUN_NOMOR = String(res.counter.tahun); }
-  if (res && res.settings) ADM.settings = Object.assign({}, DEFAULT_SET, res.settings);
+  if (res && res.settings) setSettings(res.settings);
   if (res && res.revOk) ADM.rev = res.rev;
-  else { ADM.rev = null; setTimeout(() => sync(false), 300); }
+  else ADM.rev = null;
   persistCache();
-  renderAll();
+  if (document.body.dataset.view === 'vAdmin') renderAll();
 }
 function upsertLocal(j, rec) {
   if (!rec || !rec.id) return;
@@ -1477,11 +1463,15 @@ function upsertLocal(j, rec) {
   const clean = {};
   Object.keys(rec).forEach(k => { if (k.charAt(0) !== '_') clean[k] = rec[k] == null ? '' : String(rec[k]); });
   if (i >= 0) arr[i] = Object.assign({}, arr[i], clean);
+  else if (ADM.loaded) arr.unshift(clean);
 }
+const findRec = (j, id) => ADM.data[j].find(r => r.id === id) || (DONE && DONE.j === j && DONE.rec.id === id ? DONE.rec : null);
 
-/* Tampilan dasbor */
+/* Tampilan */
 function renderAll() {
   renderNav(); renderBoard(); renderHead(); renderToolbar(); renderList();
+  const fl = $('#folderLink');
+  if (ADM.settings.FOLDER_ARSIP_ID) { fl.href = 'https://drive.google.com/drive/folders/' + encodeURIComponent(ADM.settings.FOLDER_ARSIP_ID); fl.hidden = false; } else fl.hidden = true;
   const sl = $('#sheetLink');
   if (ADM.sheetUrl) { sl.href = ADM.sheetUrl; sl.hidden = false; } else sl.hidden = true;
   $('#period').value = String(ADM.days);
@@ -1489,20 +1479,21 @@ function renderAll() {
   b.setAttribute('aria-pressed', ADM.sound ? 'true' : 'false');
   b.querySelector('use').setAttribute('href', ADM.sound ? '#i-bell' : '#i-belloff');
 }
+function countToday(j) { return ADM.data[j].filter(r => String(r.waktu).slice(0, 10) === ADM.today).length; }
 function renderNav() {
   $('#sideNav').innerHTML = JENIS.map(j => {
-    const list = ADM.data[j], pend = list.filter(isPending).length, on = j === ADM.tab;
-    return `<button class="nav-i${on ? ' on' : ''}" data-act="tab" data-j="${j}"${on ? ' aria-current="page"' : ''}><svg class="i" aria-hidden="true"><use href="#${FORMS[j].icon}"/></svg><span class="nav-t">${FORMS[j].short}</span>${pend ? `<span class="nav-p" title="${pend} menunggu terbit"><i aria-hidden="true"></i>${pend}<span class="sr"> menunggu terbit</span></span>` : ''}</button>`;
+    const on = j === ADM.tab, n = countToday(j);
+    return `<button class="nav-i${on ? ' on' : ''}" data-act="tab" data-j="${j}"${on ? ' aria-current="page"' : ''}><svg class="i" aria-hidden="true"><use href="#${FORMS[j].icon}"/></svg><span class="nav-t">${FORMS[j].short}</span>${n ? `<span class="nav-p" title="${n} surat hari ini"><i aria-hidden="true"></i>${n}<span class="sr"> surat hari ini</span></span>` : ''}</button>`;
   }).join('');
   $('#tabsM').innerHTML = JENIS.map(j => {
-    const pend = ADM.data[j].filter(isPending).length, on = j === ADM.tab;
-    return `<button class="tab${on ? ' on' : ''}" data-act="tab" data-j="${j}"${on ? ' aria-current="page"' : ''}>${FORMS[j].short}${pend ? `<span class="tab-p" title="${pend} menunggu terbit">${pend}</span>` : ''}</button>`;
+    const on = j === ADM.tab, n = countToday(j);
+    return `<button class="tab${on ? ' on' : ''}" data-act="tab" data-j="${j}"${on ? ' aria-current="page"' : ''}>${FORMS[j].short}${n ? `<span class="tab-p" title="${n} surat hari ini">${n}</span>` : ''}</button>`;
   }).join('');
 }
 function renderHead() {
   $('#aTitle').textContent = FORMS[ADM.tab].title;
-  const n = ADM.data[ADM.tab].length, p = ADM.data[ADM.tab].filter(isPending).length;
-  $('#aSub').textContent = ADM.loaded ? `${n} pengajuan, ${p} menunggu terbit` : 'Memuat data pengajuan';
+  const n = ADM.data[ADM.tab].length;
+  $('#aSub').textContent = ADM.loaded ? `${n} surat ${ADM.days ? 'dalam ' + (ADM.days === 365 ? '1 tahun' : ADM.days + ' hari') + ' terakhir' : 'tersimpan'}, ${countToday(ADM.tab)} hari ini` : 'Memuat data surat';
 }
 function renderBoard() {
   const T = ADM.today, ym = T.slice(0, 7);
@@ -1511,75 +1502,68 @@ function renderBoard() {
   const perDay = {};
   all.forEach(r => { const d = String(r.waktu || '').slice(0, 10); perDay[d] = (perDay[d] || 0) + 1; });
   const masuk = perDay[T] || 0, kemarin = perDay[addDaysISO(T, -1)] || 0;
-  const pendBy = {};
-  JENIS.forEach(j => { pendBy[j] = ADM.data[j].filter(isPending).length; });
-  const pend = JENIS.reduce((a, j) => a + pendBy[j], 0);
-  const terbit = all.filter(r => !isPending(r) && String(r.terbitAt || r.waktu || '').slice(0, 7) === ym).length;
+  const bulan = all.filter(r => String(r.waktu || '').slice(0, 7) === ym).length;
+  const drive = all.filter(r => r.pdf).length;
   const trend = [];
   for (let i = 11; i >= 0; i--) { const d = addDaysISO(T, -i); trend.push([d, perDay[d] || 0]); }
   const max = Math.max.apply(null, [1].concat(trend.map(x => x[1])));
-  const spark = trend.map((x, i) => `<i class="${i === 11 ? 'now' : ''}" style="height:${Math.max(9, Math.round(x[1] / max * 100))}%" tabindex="0" data-tip="${esc(hariSingkat(x[0]) + ': ' + x[1] + ' pengajuan')}" aria-label="${esc(tglIndo(x[0]) + ', ' + x[1] + ' pengajuan')}"></i>`).join('');
+  const spark = trend.map((x, i) => `<i class="${i === 11 ? 'now' : ''}" style="height:${Math.max(9, Math.round(x[1] / max * 100))}%" tabindex="0" data-tip="${esc(hariSingkat(x[0]) + ': ' + x[1] + ' surat')}" aria-label="${esc(tglIndo(x[0]) + ', ' + x[1] + ' surat')}"></i>`).join('');
   const L = ADM.loaded;
   $('#board').innerHTML =
-    `<div class="kpi"><p class="kpi-l"><i class="key" style="--k:var(--info)" aria-hidden="true"></i>Masuk hari ini</p><p class="kpi-v">${L ? masuk : '–'}</p><p class="kpi-s">Kemarin ${L ? kemarin : '–'}</p><div class="spark" role="group" aria-label="Jumlah pengajuan per hari, 12 hari terakhir">${spark}</div></div>` +
-    `<div class="kpi"><p class="kpi-l"><svg class="i" style="color:var(--warn-hi)" aria-hidden="true"><use href="#i-clock"/></svg>Menunggu terbit</p><p class="kpi-v">${L ? pend : '–'}</p><p class="kpi-s">${JENIS.map(j => FORMS[j].short + ' ' + pendBy[j]).join(', ')}</p></div>` +
-    `<div class="kpi"><p class="kpi-l"><svg class="i" style="color:var(--good-hi)" aria-hidden="true"><use href="#i-check"/></svg>Terbit bulan ini</p><p class="kpi-v">${L ? terbit : '–'}</p><p class="kpi-s">${BULAN[+ym.slice(5, 7) - 1]} ${ym.slice(0, 4)}</p></div>` +
-    `<div class="kpi"><p class="kpi-l"><i class="key" style="--k:#5B7A90" aria-hidden="true"></i>Total pengajuan</p><p class="kpi-v">${L ? all.length : '–'}</p><p class="kpi-s">${ADM.days ? ADM.days + ' hari terakhir' : 'Semua data'}</p></div>`;
+    `<div class="kpi"><p class="kpi-l"><i class="key" style="--k:var(--info)" aria-hidden="true"></i>Surat hari ini</p><p class="kpi-v">${L ? masuk : '–'}</p><p class="kpi-s">Kemarin ${L ? kemarin : '–'}</p><div class="spark" role="group" aria-label="Jumlah surat per hari, 12 hari terakhir">${spark}</div></div>` +
+    `<div class="kpi"><p class="kpi-l"><svg class="i" style="color:var(--good-hi)" aria-hidden="true"><use href="#i-check"/></svg>Terbit bulan ini</p><p class="kpi-v">${L ? bulan : '–'}</p><p class="kpi-s">${BULAN[+ym.slice(5, 7) - 1]} ${ym.slice(0, 4)}</p></div>` +
+    `<div class="kpi"><p class="kpi-l"><svg class="i" style="color:var(--accent)" aria-hidden="true"><use href="#i-doc"/></svg>PDF di Google Drive</p><p class="kpi-v">${L ? drive : '–'}</p><p class="kpi-s">${L ? (all.length - drive ? (all.length - drive) + ' sedang disimpan' : 'Semua sudah tersimpan') : '–'}</p></div>` +
+    `<div class="kpi"><p class="kpi-l"><i class="key" style="--k:#5B7A90" aria-hidden="true"></i>Total surat</p><p class="kpi-v">${L ? all.length : '–'}</p><p class="kpi-s">${ADM.days ? (ADM.days === 365 ? '1 tahun' : ADM.days + ' hari') + ' terakhir' : 'Semua data'}</p></div>`;
 }
-function renderToolbar() {
-  $$('#segStatus button').forEach(b => { const on = b.dataset.s === ADM.status; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
-  if ($('#q').value !== ADM.q) $('#q').value = ADM.q;
-}
+function renderToolbar() { if ($('#q').value !== ADM.q) $('#q').value = ADM.q; }
 function filtered() {
   const q = ADM.q.trim().toLowerCase();
-  return ADM.data[ADM.tab].filter(r =>
-    (!ADM.status || (ADM.status === 'pend' ? isPending(r) : !isPending(r))) &&
-    (!q || [r.nama, r.nrp, r.nomorSurat, r.pNama, r.kesatuan, r.pangkat].join(' ').toLowerCase().indexOf(q) >= 0));
-}
-function dupSet() {
-  const g = {}, out = new Set();
-  ADM.data[ADM.tab].forEach(r => { if (!isPending(r) || !r.nrp) return; const k = r.nrp + '|' + String(r.waktu).slice(0, 10); (g[k] = g[k] || []).push(r.id); });
-  Object.keys(g).forEach(k => { if (g[k].length > 1) g[k].forEach(id => out.add(id)); });
-  return out;
+  return ADM.data[ADM.tab].filter(r => !q || [r.nama, r.nrp, r.nomorSurat, r.pNama, r.kesatuan, r.pangkat].join(' ').toLowerCase().indexOf(q) >= 0);
 }
 const LOADER = '<div class="loader" role="status"><svg class="ecg" viewBox="0 0 600 66" aria-hidden="true"><path class="base" d="M0 40 L18 40 Q24 31 30 40 L36 40 L40 46 L46 6 L52 60 L57 40 L68 40 Q80 26 92 40 L150 40 L168 40 Q174 31 180 40 L186 40 L190 46 L196 6 L202 60 L207 40 L218 40 Q230 26 242 40 L300 40"/><path class="sweep" pathLength="1000" d="M0 40 L18 40 Q24 31 30 40 L36 40 L40 46 L46 6 L52 60 L57 40 L68 40 Q80 26 92 40 L150 40 L168 40 Q174 31 180 40 L186 40 L190 46 L196 6 L202 60 L207 40 L218 40 Q230 26 242 40 L300 40"/></svg><span>{t}</span></div>';
 function loaderHTML(t) { return LOADER.replace('{t}', esc(t)).replace(/viewBox="0 0 600 66"/, 'viewBox="0 0 300 66"'); }
 function renderList() {
   const box = $('#list');
-  if (!ADM.loaded) { box.innerHTML = loaderHTML('Memuat data pengajuan'); updateSel(); return; }
+  if (!ADM.loaded) { box.innerHTML = loaderHTML('Memuat data surat'); updateSel(); return; }
   const rows = filtered();
   if (!rows.length) {
     const any = ADM.data[ADM.tab].length > 0;
     box.innerHTML = any
-      ? `<div class="empty"><svg class="i"><use href="#i-search"/></svg><h3>Tidak ada yang cocok</h3><p>Tidak ada pengajuan ${esc(FORMS[ADM.tab].short)} yang sesuai dengan pencarian atau saringan status.</p><button class="btn" data-act="clearFilters">Hapus saringan</button></div>`
-      : `<div class="empty"><svg class="i"><use href="#i-doc"/></svg><h3>Belum ada pengajuan</h3><p>Pengajuan ${esc(FORMS[ADM.tab].title)} ${ADM.days ? 'dalam ' + ADM.days + ' hari terakhir' : ''} akan muncul di sini begitu pemohon mengirim formulir.</p><button class="btn" data-act="qr"><svg class="i"><use href="#i-qr"/></svg>Tampilkan QR code formulir</button></div>`;
+      ? `<div class="empty"><svg class="i"><use href="#i-search"/></svg><h3>Tidak ada yang cocok</h3><p>Tidak ada surat ${esc(FORMS[ADM.tab].short)} yang sesuai dengan pencarian.</p><button class="btn" data-act="clearFilters">Hapus pencarian</button></div>`
+      : `<div class="empty"><svg class="i"><use href="#i-doc"/></svg><h3>Belum ada surat</h3><p>${esc(FORMS[ADM.tab].title)} ${ADM.days ? 'dalam ' + (ADM.days === 365 ? '1 tahun' : ADM.days + ' hari') + ' terakhir ' : ''}akan muncul di sini begitu formulir dikirim.</p><a class="btn btn-pri" href="#/${FORMS[ADM.tab].slug}"><svg class="i"><use href="#i-form"/></svg>Buat ${esc(FORMS[ADM.tab].short)}</a></div>`;
     updateSel();
     return;
   }
-  const dups = dupSet();
   const shown = rows.slice(0, ADM.limit);
   const allSel = shown.every(r => ADM.sel.has(r.id));
-  box.innerHTML = `<div class="list-h"><label class="row-ck"><input type="checkbox" id="selAll"${allSel ? ' checked' : ''} aria-label="Pilih semua yang tampil"></label><span class="lh-all">Pilih semua</span><span class="lh-name">Pemohon</span><span class="lh-no">Nomor surat</span><span class="lh-time">Masuk</span><span class="lh-st">Status</span><span class="lh-count">${rows.length} data</span></div>` +
-    `<div role="list">${shown.map(r => rowHTML(r, dups)).join('')}</div>` +
-    (rows.length > shown.length ? `<div class="list-more"><button class="btn" data-act="more">Tampilkan ${Math.min(PAGE, rows.length - shown.length)} data berikutnya</button></div>` : '');
+  box.innerHTML = `<div class="list-h"><label class="row-ck"><input type="checkbox" id="selAll"${allSel ? ' checked' : ''} aria-label="Pilih semua yang tampil"></label><span class="lh-all">Pilih semua</span><span class="lh-name">Nama</span><span class="lh-no">Nomor surat</span><span class="lh-time">Masuk</span><span class="lh-st">Arsip</span><span class="lh-count">${rows.length} surat</span></div>` +
+    `<div role="list">${shown.map(rowHTML).join('')}</div>` +
+    (rows.length > shown.length ? `<div class="list-more"><button class="btn" data-act="more">Tampilkan ${Math.min(PAGE, rows.length - shown.length)} surat berikutnya</button></div>` : '');
   updateSel();
 }
-function rowHTML(r, dups) {
-  const pend = isPending(r), sel = ADM.sel.has(r.id), id = esc(r.id);
+function drivePill(r) {
+  if (r.pdf) return '<span class="pill p-good"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Di Drive</span>';
+  if (ADM.healing.has(r.id)) return '<span class="pill p-info"><span class="spin" aria-hidden="true"></span>Menyimpan</span>';
+  return '<span class="pill p-warn"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg>Belum di Drive</span>';
+}
+function rowHTML(r) {
+  const sel = ADM.sel.has(r.id), id = esc(r.id);
   const sub = [r.pangkat, r.nrp ? 'NRP ' + r.nrp : ''].filter(Boolean).map(esc).join('<span class="sep"></span>');
-  const st = pend
-    ? '<span class="pill p-warn"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg>Menunggu</span>'
-    : `<span class="pill p-good"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Terbit${Number(r.cetak) > 1 ? ' <small>' + esc(r.cetak) + 'x cetak</small>' : ''}</span>`;
-  return `<div class="row${pend ? ' is-pend' : ''}${sel ? ' is-sel' : ''}${ADM.fresh.has(r.id) ? ' fresh' : ''}" role="listitem">
+  return `<div class="row${sel ? ' is-sel' : ''}${ADM.fresh.has(r.id) ? ' fresh' : ''}" role="listitem" data-row="${id}">
     <label class="row-ck"><input type="checkbox" data-sel="${id}"${sel ? ' checked' : ''} aria-label="Pilih ${esc(r.nama)}"></label>
     <span class="av" aria-hidden="true">${esc(initials(r.nama))}</span>
-    <button class="row-main" data-act="open" data-id="${id}"><span class="row-name">${esc(r.nama || '(tanpa nama)')}</span><span class="row-sub">${sub}${dups.has(r.id) ? '<span class="sep"></span><span class="dup" title="Ada pengajuan lain dengan NRP yang sama pada hari yang sama"><svg class="i" aria-hidden="true"><use href="#i-alert"/></svg>Mungkin ganda</span>' : ''}</span></button>
+    <button class="row-main" data-act="open" data-id="${id}"><span class="row-name">${esc(r.nama || '(tanpa nama)')}</span><span class="row-sub">${sub}</span></button>
     <div class="row-meta">
-      <span class="row-no">${pend ? '<span class="muted">Belum bernomor</span>' : esc(r.nomorSurat)}</span>
+      <span class="row-no">${r.nomorSurat ? esc(r.nomorSurat) : '<span class="muted">Belum bernomor</span>'}</span>
       <span class="row-time">${esc(fmtWaktu(r.waktu))}</span>
-      <span class="row-st">${st}</span>
+      <span class="row-st">${drivePill(r)}</span>
     </div>
-    <div class="row-act"><button class="icon-btn sm" data-act="quick" data-id="${id}" aria-label="${pend ? 'Periksa lalu terbitkan' : 'Cetak ulang'}" title="${pend ? 'Periksa lalu terbitkan' : 'Cetak ulang'}"><svg class="i"><use href="#i-print"/></svg></button><button class="icon-btn sm danger" data-act="del" data-id="${id}" aria-label="Hapus" title="Hapus"><svg class="i"><use href="#i-trash"/></svg></button></div>
+    <div class="row-act">
+      <button class="icon-btn sm" data-act="pdf" data-id="${id}" aria-label="Unduh PDF" data-tip="Unduh PDF"><svg class="i"><use href="#i-download"/></svg><span class="ra-t">PDF</span></button>
+      <button class="icon-btn sm" data-act="word" data-id="${id}" aria-label="Unduh Word" data-tip="Unduh Word"><svg class="i"><use href="#i-word"/></svg><span class="ra-t">Word</span></button>
+      <button class="icon-btn sm" data-act="print" data-id="${id}" aria-label="Cetak" data-tip="Cetak"><svg class="i"><use href="#i-print"/></svg><span class="ra-t">Cetak</span></button>
+      <button class="icon-btn sm danger" data-act="del" data-id="${id}" aria-label="Hapus" data-tip="Hapus"><svg class="i"><use href="#i-trash"/></svg></button>
+    </div>
   </div>`;
 }
 function updateSel() {
@@ -1589,10 +1573,6 @@ function updateSel() {
   bar.classList.toggle('show', n > 0);
   bar.setAttribute('aria-hidden', n > 0 ? 'false' : 'true');
   $('#selN').textContent = n;
-  const recs = ADM.data[ADM.tab].filter(r => ADM.sel.has(r.id));
-  const nNew = recs.filter(isPending).length;
-  const st = $('#selIssueTxt');
-  if (st) st.innerHTML = nNew ? 'Terbitkan <span class="lbl-l">&amp; cetak</span>' : 'Cetak ulang';
   const all = $('#selAll');
   if (all) { const shown = filtered().slice(0, ADM.limit); all.checked = shown.length > 0 && shown.every(r => ADM.sel.has(r.id)); }
 }
@@ -1626,88 +1606,48 @@ function toggleSound() {
   store.set('suket_sound', ADM.sound);
   if (ADM.sound) beep();
   renderAll();
-  toast(ADM.sound ? 'Suara pengajuan baru diaktifkan.' : 'Suara pengajuan baru dimatikan.', 'info', 2500);
+  toast(ADM.sound ? 'Suara surat baru diaktifkan.' : 'Suara surat baru dimatikan.', 'info', 2500);
 }
 
 /* Aksi data */
-async function quickPrint(id) {
-  const r = ADM.data[ADM.tab].find(x => x.id === id);
-  if (!r) return;
-  if (isPending(r)) { openDetail(ADM.tab, id); return; }
-  await printLetters([{ j: ADM.tab, rec: r }]);
-  api('reprint', { jenis: ADM.tab, ids: [id], rev: ADM.rev }, { auth: true, retries: 1 })
-    .then(res => { (res.records || []).forEach(x => upsertLocal(ADM.tab, x)); mutated(res); }).catch(() => {});
+async function printRecs(j, recs) {
+  recs = recs.filter(Boolean);
+  if (!recs.length) return;
+  await printLetters(recs.map(r => ({ j: j, rec: r })));
+  api('reprint', { jenis: j, ids: recs.map(r => r.id), rev: ADM.rev }, { retries: 1 })
+    .then(res => { (res.records || []).forEach(x => upsertLocal(j, x)); mutated(res); syncDetail(); }).catch(() => {});
 }
 async function delRecs(ids, j) {
   j = j || ADM.tab;
   ids = ids.filter(Boolean);
   if (!ids.length) return;
   const recs = ADM.data[j].filter(r => ids.indexOf(r.id) >= 0);
-  const issued = recs.filter(r => !isPending(r)).length;
   const ok = await ask({
-    title: ids.length === 1 ? 'Hapus data ' + (recs[0] ? recs[0].nama : 'ini') + '?' : 'Hapus ' + ids.length + ' data?',
-    msg: 'Data dihapus dari Spreadsheet dan tidak bisa dikembalikan.' + (issued ? (ids.length === 1 ? ' Surat ini sudah terbit; nomornya tidak akan dipakai ulang.' : ' ' + issued + ' di antaranya sudah terbit; nomornya tidak akan dipakai ulang.') : ''),
+    title: ids.length === 1 ? 'Hapus surat ' + (recs[0] ? recs[0].nama : 'ini') + '?' : 'Hapus ' + ids.length + ' surat?',
+    msg: (ids.length === 1 ? 'Data dihapus dari Spreadsheet dan file PDF-nya' : 'Data dihapus dari Spreadsheet dan file PDF-nya') + ' dipindahkan ke Sampah Google Drive. Nomor surat tidak dipakai ulang.',
     ok: 'Hapus', danger: true, icon: 'i-trash'
   });
   if (!ok) return;
   ADM.busy++;
   try {
-    const res = await api('remove', { jenis: j, ids: ids, rev: ADM.rev }, { auth: true, retries: 1 });
+    const res = await api('remove', { jenis: j, ids: ids, rev: ADM.rev }, { retries: 1 });
     ADM.data[j] = ADM.data[j].filter(r => ids.indexOf(r.id) < 0);
     ids.forEach(id => ADM.sel.delete(id));
-    if (D.id && ids.indexOf(D.id) >= 0) { D.dirty = false; D.id = null; closeModal('mDetail'); }
+    if (D.id && ids.indexOf(D.id) >= 0) { D.id = null; closeModal('mDetail'); }
     mutated(res);
-    toast(ids.length === 1 ? 'Data dihapus.' : ids.length + ' data dihapus.', 'ok');
+    toast(ids.length === 1 ? 'Surat dihapus.' : ids.length + ' surat dihapus.', 'ok');
   } catch (e) { fail(e); }
   finally { ADM.busy--; }
 }
-async function issueSelected() {
-  const j = ADM.tab;
-  const recs = ADM.data[j].filter(r => ADM.sel.has(r.id)).sort((a, b) => String(a.waktu).localeCompare(String(b.waktu)));
-  if (!recs.length) return;
-  const nNew = recs.filter(isPending).length, nOld = recs.length - nNew;
-  const parts = [];
-  if (nNew) parts.push(nNew + ' surat baru mendapat nomor urut, bertanggal periksa hari ini' + (j === 'SKS' ? '' : ' dengan hasil Memenuhi Syarat') + '.');
-  if (nOld) parts.push(nOld + ' surat yang sudah terbit dicetak ulang dengan nomor yang sama.');
-  parts.push('Buka satu per satu bila ada isian yang perlu diubah.');
-  const ok = await ask({ title: nNew ? 'Terbitkan dan cetak ' + recs.length + ' surat?' : 'Cetak ulang ' + recs.length + ' surat?', msg: parts.join(' '), ok: nNew ? 'Terbitkan & cetak' : 'Cetak ulang', icon: 'i-print' });
-  if (!ok) return;
-  const btn = $('#bIssueSel');
-  busy(btn, true, nNew ? 'Menerbitkan' : 'Menyiapkan');
-  ADM.busy++;
-  let out = null;
-  try {
-    const res = await api('issue', { jenis: j, items: recs.map(r => ({ id: r.id, data: {} })), rev: ADM.rev }, { auth: true, retries: 1, timeout: 60000 });
-    (res.records || []).forEach(x => upsertLocal(j, x));
-    ADM.sel.clear();
-    mutated(res);
-    out = res.records || [];
-    if (nNew) toast(nNew + ' surat diterbitkan.', 'ok');
-  } catch (e) { fail(e); }
-  finally { ADM.busy--; busy(btn, false); updateSel(); }
-  if (out && out.length) await printLetters(out.map(x => ({ j: j, rec: x })));
-}
 
-/* Ruang kerja detail */
-const D = { j: null, id: null, dirty: false, sig: '' };
-const curRec = () => D.id ? ADM.data[D.j].find(r => r.id === D.id) : null;
-const adminKeysFor = r => (isPending(r) ? [] : ['nomorSurat']).concat(FORMS[D.j].admin);
-const detailKeys = r => adminKeysFor(r).concat(inputKeys(D.j));
-function formatNomor(j, n, tgl) {
-  const m = /^(\d{4})-(\d{2})/.exec(tgl || '') || /^(\d{4})-(\d{2})/.exec(ADM.today);
-  return String(ADM.settings['FORMAT_NOMOR_' + j] || '{N}').replace(/\{N\}/g, n).replace(/\{ROMAWI\}/g, ROMAWI[+m[2] - 1]).replace(/\{TAHUN\}/g, m[1]);
-}
-function predictNomor(j, tgl) {
-  const s = ADM.settings, yr = ADM.today.slice(0, 4);
-  let last = parseInt(s['NOMOR_TERAKHIR_' + j], 10) || 0;
-  if (String(s.RESET_NOMOR_TAHUNAN).toUpperCase() !== 'TIDAK' && s.TAHUN_NOMOR && String(s.TAHUN_NOMOR) !== yr) last = 0;
-  return formatNomor(j, last + 1, tgl);
-}
+/* Pratinjau surat */
+const D = { j: null, id: null, sig: '' };
+const curRec = () => D.id ? findRec(D.j, D.id) : null;
 function openDetail(j, id) {
-  D.j = j; D.id = id; D.dirty = false;
+  D.j = j; D.id = id;
   if (!curRec()) return;
   buildDetail();
-  setPane('form');
+  setPane('prev');
   openModal('mDetail');
   requestAnimationFrame(fitPreview);
   setTimeout(fitPreview, 260);
@@ -1715,45 +1655,22 @@ function openDetail(j, id) {
 function buildDetail() {
   const r = curRec();
   if (!r) return;
-  const pend = isPending(r), s = ADM.settings;
-  const adm = {
-    nomorSurat: r.nomorSurat,
-    tglPeriksa: r.tglPeriksa || (pend ? ADM.today : ''),
-    hasil: r.hasil || 'MS',
-    kualitatif: pend && !r.kualitatif ? s.DEFAULT_KUALITATIF : r.kualitatif,
-    kuantitatif: pend && !r.kuantitatif ? s.DEFAULT_KUANTITATIF : r.kuantitatif
-  };
   $('#dTitle').textContent = r.nama || '(tanpa nama)';
-  $('#dSub').textContent = FORMS[D.j].title + ', masuk ' + fmtWaktu(r.waktu);
-  $('#dStatus').innerHTML = pend ? '<span class="pill p-warn"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg>Menunggu</span>' : '<span class="pill p-good"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Terbit</span>';
-  const box = $('#dForm'), keep = box.scrollTop;
-  box.innerHTML = `<section class="adm-box"><header class="sect-h"><h3>Diisi petugas</h3></header>` +
-    (pend ? `<p class="adm-note"><svg class="i" aria-hidden="true"><use href="#i-info"/></svg><span>Nomor surat dibuat saat Anda menekan <b>Terbitkan &amp; cetak</b>. Perkiraan nomor: <b id="dPredict">${esc(predictNomor(D.j, adm.tglPeriksa))}</b></span></p>` : '') +
-    adminKeysFor(r).map(k => fieldHTML(k, adm[k], 'd', true)).join('') + '</section>' +
-    FORMS[D.j].sections.map(sx => `<section class="sect sect-d"><header class="sect-h"><h3>${esc(sx[0])}</h3></header>${sx[1].map(k => fieldHTML(k, r[k], 'd', true)).join('')}</section>`).join('') +
-    (pend ? '' : `<p class="d-meta">Diterbitkan ${esc(fmtWaktu(r.terbitAt) || '-')}. Sudah dicetak ${esc(r.cetak || '0')} kali${r.dicetak ? ', terakhir ' + esc(fmtWaktu(r.dicetak)) : ''}.</p>`);
-  box.scrollTop = keep;
+  $('#dSub').textContent = FORMS[D.j].title + (r.nomorSurat ? ', ' + r.nomorSurat : '');
+  $('#dStatus').innerHTML = drivePill(r);
+  const keys = inputKeys(D.j);
+  $('#dForm').innerHTML =
+    `<section class="adm-box"><header class="sect-h"><h3>Surat</h3></header><dl class="rv">` +
+    `<div><dt>Nomor surat</dt><dd class="mono">${esc(r.nomorSurat || '-').replace(/\//g, '/<wbr>')}</dd></div>` +
+    `<div><dt>Tanggal periksa</dt><dd>${esc(tglIndo(r.tglPeriksa) || '-')}</dd></div>` +
+    (D.j === 'SKS' ? `<div><dt>Kualitatif / Kuantitatif</dt><dd>${esc(r.kualitatif || '-')} / ${esc(r.kuantitatif || '-')}</dd></div>` : `<div><dt>Hasil</dt><dd>${esc(displayVal('hasil', r.hasil || 'MS'))}</dd></div>`) +
+    `<div><dt>Masuk</dt><dd>${esc(fmtWaktu(r.waktu))}</dd></div>` +
+    `<div><dt>Dicetak</dt><dd>${esc(r.cetak || '0')} kali${r.dicetak ? ', terakhir ' + esc(fmtWaktu(r.dicetak)) : ''}</dd></div>` +
+    `</dl></section>` +
+    FORMS[D.j].sections.map(sx => `<section class="rv-sect"><h3>${esc(sx[0])}</h3><dl class="rv">${sx[1].filter(k => keys.indexOf(k) >= 0).map(k => `<div><dt>${esc(FIELDS[k].label)}</dt><dd>${esc(displayVal(k, r[k]))}</dd></div>`).join('')}</dl></section>`).join('') +
+    `<div class="d-pdf">${r.pdf ? `<a class="btn-link" href="${esc(r.pdf)}" target="_blank" rel="noopener"><svg class="i"><use href="#i-ext"/></svg>Buka PDF di Google Drive</a><span class="d-note">Hanya bisa dibuka akun pemilik Drive.</span>` : `<span>PDF belum tersimpan di Drive.</span><button class="btn-link" data-act="archiveNow" id="bArchive"><svg class="i"><use href="#i-save"/></svg>Simpan ke Drive sekarang</button>`}</div>`;
   D.sig = JSON.stringify(r);
-  const ib = $('#bIssue');
-  if (!ib.dataset.busy) ib.innerHTML = '<svg class="i"><use href="#i-print"/></svg><span>' + (pend ? 'Terbitkan &amp; cetak' : 'Cetak ulang') + '</span>';
-  $('#prevNote').textContent = pend ? 'Nomor ditandai kuning = perkiraan' : '';
-  updateDetailButtons();
-  renderPreview();
-}
-function updateDetailButtons() { $('#bSave').classList.toggle('is-dirty', D.dirty); }
-const previewSoon = debounce(() => renderPreview(), 160);
-function renderPreview() {
-  const r = curRec();
-  if (!r) return;
-  const x = Object.assign({}, r), box = $('#dForm');
-  detailKeys(r).forEach(k => { if (box.querySelector('[data-field="' + k + '"]')) x[k] = getVal(box, k); });
-  let opt = null;
-  if (isPending(r)) {
-    const p = predictNomor(D.j, x.tglPeriksa);
-    opt = { predicted: p };
-    const el = $('#dPredict'); if (el) el.textContent = p;
-  }
-  $('#pWrap').innerHTML = RENDER[D.j](x, ADM.settings, opt);
+  $('#pWrap').innerHTML = RENDER[D.j](r, ADM.settings);
   fitPreview();
 }
 function fitPreview() {
@@ -1768,156 +1685,27 @@ function setPane(p) {
   $$('#mDetail .ws-seg button').forEach(b => { const on = b.dataset.pane === p; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
   if (p === 'prev') requestAnimationFrame(fitPreview);
 }
-async function requestCloseDetail() {
-  if (D.dirty) {
-    const ok = await ask({ title: 'Tutup tanpa menyimpan?', msg: 'Perubahan yang belum disimpan akan hilang.', ok: 'Tutup tanpa menyimpan', danger: true, icon: 'i-alert' });
-    if (!ok) return;
-  }
-  D.dirty = false; D.id = null;
-  closeModal('mDetail');
-}
+function closeDetail() { D.id = null; closeModal('mDetail'); }
 function syncDetail() {
   if (!isOpen('mDetail') || !D.id) return;
   const r = curRec();
-  if (!r) { D.dirty = false; D.id = null; closeModal('mDetail'); toast('Data yang sedang dibuka sudah dihapus.', 'warn'); return; }
-  if (!D.dirty && JSON.stringify(r) !== D.sig) buildDetail();
-}
-async function saveDetail() {
-  const r = curRec();
-  if (!r) return false;
-  const data = validateBox($('#dForm'), detailKeys(r));
-  if (!data) { setPane('form'); toast('Periksa isian yang ditandai merah.', 'err'); return false; }
-  const btn = $('#bSave');
-  busy(btn, true, 'Menyimpan');
-  ADM.busy++;
-  try {
-    const res = await api('save', { jenis: D.j, id: r.id, data: data, rev: ADM.rev }, { auth: true, retries: 1 });
-    upsertLocal(D.j, res.record);
-    D.dirty = false;
-    D.sig = JSON.stringify(curRec());
-    mutated(res);
-    toast('Perubahan disimpan.', 'ok');
-    return true;
-  } catch (e) { fail(e); return false; }
-  finally { ADM.busy--; busy(btn, false); updateDetailButtons(); }
-}
-async function issueCurrent() {
-  const r = curRec();
-  if (!r) return;
-  const btn = $('#bIssue');
-  if (btn.dataset.busy) return;
-  const pend = isPending(r), j = D.j;
-  const data = validateBox($('#dForm'), detailKeys(r));
-  if (!data) { setPane('form'); toast('Periksa isian yang ditandai merah.', 'err'); return; }
-  busy(btn, true, pend ? 'Menerbitkan' : 'Menyiapkan');
-  ADM.busy++;
-  let recs = null;
-  try {
-    if (pend) {
-      const res = await api('issue', { jenis: j, items: [{ id: r.id, data: data }], rev: ADM.rev }, { auth: true, retries: 1 });
-      (res.records || []).forEach(x => upsertLocal(j, x));
-      mutated(res);
-      recs = res.records || [];
-      if (recs[0]) toast('Surat diterbitkan dengan nomor ' + recs[0].nomorSurat + '.', 'ok', 6000);
-    } else {
-      if (D.dirty) {
-        const res = await api('save', { jenis: j, id: r.id, data: data, rev: ADM.rev }, { auth: true, retries: 1 });
-        upsertLocal(j, res.record);
-        mutated(res);
-      }
-      recs = [curRec()];
-      api('reprint', { jenis: j, ids: [r.id], rev: ADM.rev }, { auth: true, retries: 1 })
-        .then(res => { (res.records || []).forEach(x => upsertLocal(j, x)); mutated(res); syncDetail(); }).catch(() => {});
-    }
-    D.dirty = false;
-  } catch (e) { fail(e); }
-  finally { ADM.busy--; busy(btn, false); }
-  if (recs && recs.length && recs[0]) {
-    buildDetail();
-    await printLetters(recs.map(x => ({ j: j, rec: x })));
-  }
+  if (!r) { D.id = null; closeModal('mDetail'); toast('Surat yang sedang dibuka sudah dihapus.', 'warn'); return; }
+  if (JSON.stringify(r) !== D.sig) buildDetail();
 }
 
-/* Pengaturan */
-const SET_GROUPS = [
-  { t: 'Nomor surat', d: 'Gunakan {N} untuk nomor urut, {ROMAWI} untuk bulan periksa dalam angka romawi, dan {TAHUN} untuk tahun periksa.', items: [['FORMAT_NOMOR_SKS', 'Format Suket Sehat'], ['FORMAT_NOMOR_NIKAH', 'Format Nikah Dinas'], ['FORMAT_NOMOR_SENPI', 'Format Senpi'], ['RESET_NOMOR_TAHUNAN', 'Nomor kembali ke 1 setiap tahun baru', 'yn']] },
-  { t: 'Nomor terakhir terpakai', d: 'Surat berikutnya memakai angka ini ditambah 1. Ubah hanya bila ingin melanjutkan dari nomor tertentu.', counters: true },
-  { t: 'Penanda tangan Suket Sehat', items: [['TTD_SKS_JABATAN', 'Jabatan'], ['TTD_SKS_NAMA', 'Nama'], ['TTD_SKS_PANGKAT', 'Pangkat dan NIP'], ['TTD_SKS_GAMBAR', 'Gambar tanda tangan (opsional)', 'img']] },
-  { t: 'Penanda tangan Nikah Dinas', items: [['TTD_NIKAH_JABATAN', 'Jabatan'], ['TTD_NIKAH_NAMA', 'Nama'], ['TTD_NIKAH_PANGKAT', 'Pangkat dan NIP'], ['TTD_NIKAH_GAMBAR', 'Gambar tanda tangan (opsional)', 'img']] },
-  { t: 'Penanda tangan Senpi', items: [['TTD_SENPI_JABATAN', 'Jabatan'], ['TTD_SENPI_NAMA', 'Nama'], ['TTD_SENPI_PANGKAT', 'Pangkat dan NIP'], ['TTD_SENPI_GAMBAR', 'Gambar tanda tangan (opsional)', 'img']] },
-  { t: 'Isi tetap surat', items: [['DEFAULT_KUALITATIF', 'Kualitatif awal Suket Sehat'], ['DEFAULT_KUANTITATIF', 'Kuantitatif awal Suket Sehat'], ['SENPI_RUJUKAN_A', 'Rujukan 1a Suket Senpi', 'ta'], ['SENPI_TEMBUSAN', 'Tembusan Suket Senpi, satu per baris', 'ta']] },
-  { t: 'Formulir pemohon', items: [['DAFTAR_KESATUAN', 'Pilihan kesatuan, satu per baris', 'ta', 'Kosongkan agar pemohon mengetik nama kesatuan sendiri. Bila diisi, tetap tersedia pilihan "Lainnya".']] },
-  { t: 'Ganti password', d: 'Kosongkan bila tidak ingin mengganti password.', password: true }
-];
-let SETV = null;
-async function openSettings() {
-  drawer(false);
-  $('#setBody').innerHTML = loaderHTML('Memuat pengaturan');
-  $('#bSetSave').disabled = true;
-  openModal('mSet');
-  try {
-    SETV = await api('settings', {}, { auth: true, retries: 1 });
-    renderSettings();
-    $('#bSetSave').disabled = false;
-  } catch (e) {
-    if (e.code !== 'AUTH') $('#setBody').innerHTML = `<div class="empty"><svg class="i"><use href="#i-alert"/></svg><h3>Pengaturan belum termuat</h3><p>${esc(e.message)}</p></div>`;
-  }
-}
-function renderSettings() {
-  const v = SETV.values || {}, c = SETV.counters || {};
-  const one = (k, lab, type, hint) => {
-    const id = 'set_' + k, val = v[k] == null ? '' : v[k];
-    let ctl;
-    if (type === 'yn') ctl = `<select class="inp" id="${id}" data-s="${k}"><option value="YA"${val !== 'TIDAK' ? ' selected' : ''}>Ya, mulai lagi dari 1 tiap tahun</option><option value="TIDAK"${val === 'TIDAK' ? ' selected' : ''}>Tidak, nomor terus berlanjut</option></select>`;
-    else if (type === 'ta') ctl = `<textarea class="inp" id="${id}" data-s="${k}" rows="3">${esc(val)}</textarea>`;
-    else ctl = `<input class="inp${/FORMAT/.test(k) ? ' mono' : ''}" id="${id}" data-s="${k}" value="${esc(val)}" autocomplete="off"${type === 'img' ? ' placeholder="Contoh: ttd-sks.png"' : ''}>`;
-    const h = type === 'img' ? 'Nama file PNG yang diunggah bersama index.html, atau link gambar. Kosongkan untuk tanda tangan basah.' : hint;
-    return `<div class="field"><label for="${id}">${esc(lab)}</label>${ctl}${h ? `<p class="hint">${esc(h)}</p>` : ''}</div>`;
-  };
-  $('#setBody').innerHTML = SET_GROUPS.map(g => {
-    let inner;
-    if (g.counters) inner = `<div class="sg-grid">${JENIS.map(j => `<div class="field"><label for="cnt_${j}">${FORMS[j].short}</label><input class="inp mono" id="cnt_${j}" data-c="${j}" inputmode="numeric" value="${esc(c[j] || '0')}"></div>`).join('')}</div><p class="hint">Tahun penomoran: ${esc(SETV.tahun || '')}.</p>`;
-    else if (g.password) inner = `<div class="sg-grid"><div class="field"><label for="pwOld">Password lama</label><input class="inp" id="pwOld" type="password" autocomplete="current-password"></div><div class="field"><label for="pwNew">Password baru</label><input class="inp" id="pwNew" type="password" autocomplete="new-password" placeholder="Minimal 6 karakter"></div><div class="field"><label for="pwNew2">Ulangi password baru</label><input class="inp" id="pwNew2" type="password" autocomplete="new-password"></div></div>`;
-    else inner = g.items.map(it => one(it[0], it[1], it[2], it[3])).join('');
-    return `<section class="sg"><h3>${esc(g.t)}</h3>${g.d ? `<p class="sg-d">${esc(g.d)}</p>` : ''}${inner}</section>`;
-  }).join('');
-}
-async function saveSettings() {
-  if (!SETV) return;
-  const values = {};
-  $$('#setBody [data-s]').forEach(el => { values[el.dataset.s] = el.value; });
-  for (const j of JENIS) {
-    if (String(values['FORMAT_NOMOR_' + j] || '').indexOf('{N}') < 0) { toast('Format nomor ' + FORMS[j].short + ' harus memuat {N}.', 'err'); return; }
-  }
-  const counters = {}, lower = [];
-  for (const el of $$('#setBody [data-c]')) {
-    const val = el.value.trim();
-    if (!/^\d{1,6}$/.test(val)) { toast('Nomor terakhir ' + FORMS[el.dataset.c].short + ' harus berupa angka.', 'err'); el.focus(); return; }
-    counters[el.dataset.c] = val;
-    const old = parseInt(SETV.counters[el.dataset.c], 10) || 0;
-    if (parseInt(val, 10) < old) lower.push(FORMS[el.dataset.c].short + ' dari ' + old + ' ke ' + parseInt(val, 10));
-  }
-  const pwOld = $('#pwOld').value, pwNew = $('#pwNew').value, pwNew2 = $('#pwNew2').value;
-  if (pwNew || pwNew2 || pwOld) {
-    if (pwNew.length < 6) { toast('Password baru minimal 6 karakter.', 'err'); $('#pwNew').focus(); return; }
-    if (pwNew !== pwNew2) { toast('Ulangan password baru belum sama.', 'err'); $('#pwNew2').focus(); return; }
-    if (!pwOld) { toast('Isi password lama untuk mengganti password.', 'err'); $('#pwOld').focus(); return; }
-  }
-  if (lower.length) {
-    const ok = await ask({ title: 'Turunkan nomor terakhir?', msg: 'Nomor terakhir ' + lower.join(', ') + ' diturunkan. Nomor di antaranya bisa terpakai dua kali.', ok: 'Tetap simpan', danger: true, icon: 'i-alert' });
-    if (!ok) return;
-  }
-  const btn = $('#bSetSave');
-  busy(btn, true, 'Menyimpan');
-  ADM.busy++;
-  try {
-    const res = await api('saveSettings', { values: values, counters: counters, newPassword: pwNew || '', oldPassword: pwOld || '', remember: ADM.remember, rev: ADM.rev }, { auth: true, retries: 0 });
-    if (res.token) saveToken(res.token, res.exp, ADM.remember);
-    mutated(res);
-    closeModal('mSet');
-    toast(res.token ? 'Pengaturan dan password baru disimpan.' : 'Pengaturan disimpan.', 'ok');
-  } catch (e) { fail(e); }
-  finally { ADM.busy--; busy(btn, false); }
+/* Simpan otomatis PDF yang belum ada di Drive (mis. pengirim menutup halaman terlalu cepat) */
+function healArchive() {
+  const limit = Date.now() - 3 * 60000, recent = addDaysISO(ADM.today, -7);
+  JENIS.forEach(j => {
+    const todo = ADM.data[j].filter(r => {
+      if (r.pdf || !r.nomorSurat || ADM.healing.has(r.id)) return false;
+      const w = String(r.waktu || '');
+      if (w.slice(0, 10) < recent) return false;
+      const t = new Date(w.replace(' ', 'T') + '+08:00').getTime();
+      return !isNaN(t) && t < limit;
+    }).slice(0, 5);
+    if (todo.length) archiveRecs(j, todo, { silent: true });
+  });
 }
 
 /* QR code */
@@ -2075,47 +1863,302 @@ async function printHTML(html, fit) {
   document.body.classList.add('has-print');
   window.print();
 }
+/* PDF surat (dipakai untuk unduhan dan arsip Google Drive) */
+const LIBS = {};
+function loadScript(src) {
+  if (!LIBS[src]) LIBS[src] = new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = res;
+    s.onerror = () => { delete LIBS[src]; s.remove(); rej(new Error('Pustaka gagal dimuat. Periksa koneksi internet lalu coba lagi.')); };
+    document.head.appendChild(s);
+  });
+  return LIBS[src];
+}
+let PDFQ = Promise.resolve();
+function letterDoc(j, rec) {                     // antrean: elemen bantu dipakai bergantian
+  const p = PDFQ.then(() => makeLetterDoc(j, rec));
+  PDFQ = p.catch(() => {});
+  return p;
+}
+async function makeLetterDoc(j, rec) {
+  await Promise.all([
+    loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'),
+    loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js')
+  ]);
+  const fit = $('#pdfFit'), host = $('#pdfHost');
+  fit.innerHTML = RENDER[j](rec, ADM.settings);
+  await waitImages(fit);
+  fitPages(fit);
+  const k = fit.querySelector('.kertas');
+  host.innerHTML = '';
+  host.appendChild(k);
+  fit.innerHTML = '';
+  try {
+    const canvas = await window.html2canvas(k, { scale: 2, backgroundColor: '#ffffff', useCORS: true, logging: false,
+      onclone: d => { const x = d.getElementById('pdfHost'); if (x) x.style.visibility = 'visible'; } });
+    const pdf = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4', compress: true });
+    pdf.setProperties({ title: (rec.nomorSurat || '') + ' - ' + (rec.nama || ''), author: 'Biddokkes Polda NTB' });
+    pdf.addImage(canvas.toDataURL('image/jpeg', 0.9), 'JPEG', 0, 0, 210, 297);
+    return pdf;
+  } finally { host.innerHTML = ''; }
+}
+let ARCH = Promise.resolve();
+function archiveRecs(j, recs, opt) {
+  opt = opt || {};
+  recs = (recs || []).filter(r => r && r.id && r.nomorSurat && !r.pdf && !ADM.healing.has(r.id));
+  if (!recs.length) return Promise.resolve({ ok: 0, last: null });
+  recs.forEach(r => ADM.healing.add(r.id));
+  if (document.body.dataset.view === 'vAdmin') renderList();
+  const run = ARCH.then(async () => {
+    let ok = 0, last = null;
+    for (const r of recs) {
+      try {
+        const cur = findRec(j, r.id) || r;
+        if (cur.pdf) { ok++; continue; }
+        const pdf = await letterDoc(j, cur);
+        const b64 = pdf.output('datauristring').split(',')[1];
+        const res = await api('archive', { jenis: j, id: r.id, pdf: b64, rev: ADM.rev }, { retries: 1, timeout: 120000 });
+        upsertLocal(j, res.record);
+        if (DONE && DONE.rec.id === r.id) DONE.rec = Object.assign({}, DONE.rec, res.record);
+        mutated(res);
+        ok++;
+      } catch (e) {
+        last = e;
+        if (e.code === 'NOT_FOUND') ADM.data[j] = ADM.data[j].filter(x => x.id !== r.id);
+      } finally { ADM.healing.delete(r.id); }
+    }
+    if (document.body.dataset.view === 'vAdmin') renderAll();
+    syncDetail();
+    if (!opt.silent) {
+      if (last) toast('PDF belum tersimpan ke Drive: ' + last.message, 'err', 8000);
+      else if (ok) toast(ok === 1 ? 'PDF surat tersimpan di Google Drive.' : ok + ' PDF surat tersimpan di Google Drive.', 'ok');
+    }
+    return { ok: ok, last: last };
+  });
+  ARCH = run.catch(() => {});
+  return run;
+}
 async function printLetters(items) {
   if (!items || !items.length) return;
   await printHTML(items.map(it => RENDER[it.j](it.rec, ADM.settings)).join(''), true);
 }
 
+/* ─────────────────────── Unduh PDF dan Word (.docx) ───────────────── */
+function fileBase(rec) { return ((rec.nomorSurat || 'Surat').replace(/[\\/:*?"<>|]+/g, '-') + ' - ' + (rec.nama || '')).replace(/\s+/g, ' ').trim().slice(0, 150); }
+function saveBlob(blob, name) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name; a.rel = 'noopener';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+async function downloadPDF(j, rec, btn) {
+  if (!rec) return;
+  busy(btn, true, 'Membuat PDF');
+  try {
+    const pdf = await letterDoc(j, rec);
+    saveBlob(pdf.output('blob'), fileBase(rec) + '.pdf');
+    toast('PDF surat diunduh.', 'ok', 2500);
+  } catch (e) { fail(e); }
+  finally { busy(btn, false); }
+}
+async function downloadWord(j, rec, btn) {
+  if (!rec) return;
+  busy(btn, true, 'Membuat Word');
+  try {
+    const blob = await letterDocx(j, rec, ADM.settings);
+    saveBlob(blob, fileBase(rec) + '.docx');
+    toast('File Word surat diunduh.', 'ok', 2500);
+  } catch (e) { fail(e); }
+  finally { busy(btn, false); }
+}
+async function loadAny(urls, test) {
+  let last = null;
+  for (const u of urls) {
+    try { await loadScript(u); if (!test || test()) return; } catch (e) { last = e; }
+  }
+  throw last || new Error('Pustaka gagal dimuat. Periksa koneksi internet.');
+}
+async function imgData(src, maxH, maxW) {
+  if (!src) return null;
+  try {
+    const r = await fetch(src, { mode: 'cors', credentials: 'omit' });
+    if (!r.ok) return null;
+    const buf = await r.arrayBuffer();
+    const url = URL.createObjectURL(new Blob([buf]));
+    const dim = await new Promise(res => { const im = new Image(); im.onload = () => res([im.naturalWidth, im.naturalHeight]); im.onerror = () => res(null); im.src = url; });
+    URL.revokeObjectURL(url);
+    if (!dim || !dim[0] || !dim[1]) return null;
+    let h = maxH, w = Math.round(dim[0] / dim[1] * h);
+    if (maxW && w > maxW) { w = maxW; h = Math.round(dim[1] / dim[0] * w); }
+    return { data: buf, w: w, h: h };
+  } catch (_) { return null; }
+}
+async function letterDocx(j, r, s) {
+  await loadAny(['https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js', 'https://unpkg.com/docx@8.5.0/build/index.umd.js'], () => !!window.docx);
+  const X = window.docx;
+  const W = 9638;                                           // lebar isi A4: 170 mm dalam twip
+  const px = n => Math.round(n * 15);                       // 1 px CSS = 15 twip
+  const NB = { style: X.BorderStyle.NONE, size: 0, color: 'FFFFFF' };
+  const NOB = { top: NB, bottom: NB, left: NB, right: NB, insideHorizontal: NB, insideVertical: NB };
+  const LINE = { style: X.BorderStyle.SINGLE, size: 6, color: '000000' };
+  const AL = X.AlignmentType;
+  const R = (t, o) => new X.TextRun(Object.assign({ text: String(t == null ? '' : t) }, o || {}));
+  const P = (runs, o) => new X.Paragraph(Object.assign({ children: (Array.isArray(runs) ? runs : [runs]).map(x => x && typeof x === 'object' ? x : R(x)) }, o || {}));
+  const SP = (b, a) => ({ spacing: { before: b || 0, after: a || 0 } });
+  const cell = (children, w, o) => new X.TableCell(Object.assign({ children: children, width: { size: w, type: X.WidthType.DXA }, borders: { top: NB, bottom: NB, left: NB, right: NB }, margins: { top: 0, bottom: 0, left: 0, right: 0 } }, o || {}));
+  const table = (rows, widths, o) => new X.Table(Object.assign({
+    width: { size: widths.reduce((a, b) => a + b, 0), type: X.WidthType.DXA }, columnWidths: widths, layout: X.TableLayoutType.FIXED, borders: NOB,
+    rows: rows.map(cs => new X.TableRow({ children: cs }))
+  }, o || {}));
+  const pad = (v) => ({ top: v, bottom: v, left: 0, right: 0 });
+  // tabel "label : isi"; ind = indentasi kiri (twip), num = kolom nomor
+  const kv = (rows, wLabel, o) => {
+    o = o || {};
+    const ind = o.ind || 0, num = o.num ? px(28) : 0, colon = px(16), vp = px(o.pad == null ? 4 : o.pad);
+    const total = o.width || W;
+    const widths = [].concat(ind ? [ind] : [], num ? [num] : [], [wLabel, colon, total - ind - num - wLabel - colon]);
+    return table(rows.map(rw => {
+      const cs = [];
+      if (ind) cs.push(cell([P('')], ind));
+      let k = 0;
+      if (num) cs.push(cell([P(rw[k++])], num, { margins: pad(vp) }));
+      cs.push(cell([P(rw[k++])], wLabel, { margins: pad(vp) }));
+      cs.push(cell([P(':')], colon, { margins: pad(vp) }));
+      const v = rw[k];
+      cs.push(cell(Array.isArray(v) && v[0] instanceof X.Paragraph ? v : [P(v)], widths[widths.length - 1], { margins: pad(vp) }));
+      return cs;
+    }), widths);
+  };
+  const msTms = (h, sep) => h === 'TMS'
+    ? [R('Memenuhi Syarat', { strike: true }), R(sep + 'Tidak Memenuhi Syarat')]
+    : [R('Memenuhi Syarat' + sep), R('Tidak Memenuhi Syarat', { strike: true })];
+  const kop = () => table([[cell([
+    P('KEPOLISIAN NEGARA REPUBLIK INDONESIA', { alignment: AL.CENTER }),
+    P('DAERAH NUSA TENGGARA BARAT', { alignment: AL.CENTER }),
+    P('BIDANG KEDOKTERAN DAN KESEHATAN', { alignment: AL.CENTER })
+  ], 5500, { borders: { top: NB, left: NB, right: NB, bottom: LINE }, margins: { top: 0, bottom: 20, left: 60, right: 60 } })]], [5500]);
+  const judul = (t, before) => [
+    P(R(t, { underline: {} }), Object.assign({ alignment: AL.CENTER }, SP(before == null ? px(26) : before, 0))),
+    P('Nomor: ' + (r.nomorSurat || ''), Object.assign({ alignment: AL.CENTER }, SP(0, px(16))))
+  ];
+  const J = (t, o) => P(typeof t === 'string' ? R(t) : t, Object.assign({ alignment: AL.JUSTIFIED }, SP(px(10), px(10)), o || {}));
+  const sig = await imgData(s['TTD_' + j + '_GAMBAR'], 78, 220);
+  const ttd = (top, an, wCol, leftCell) => {
+    const w2 = wCol || px(300);
+    const right = [].concat(top, [
+      P(an, { alignment: AL.CENTER }),
+      P(s['TTD_' + j + '_JABATAN'] || '', { alignment: AL.CENTER }),
+      sig ? P(new X.ImageRun({ data: sig.data, transformation: { width: sig.w, height: sig.h } }), { alignment: AL.CENTER, spacing: { before: 60, after: 60, line: 240, lineRule: X.LineRuleType.AUTO } })
+        : P('', { spacing: { before: 0, after: 0, line: px(78), lineRule: X.LineRuleType.EXACT } }),
+      P(R(s['TTD_' + j + '_NAMA'] || '', { underline: {} }), { alignment: AL.CENTER }),
+      P(s['TTD_' + j + '_PANGKAT'] || '', { alignment: AL.CENTER })
+    ]);
+    return table([[
+      cell(leftCell || [P('')], W - w2, { verticalAlign: X.VerticalAlign.BOTTOM }),
+      cell(right, w2)
+    ]], [W - w2, w2]);
+  };
+  const SPACES = '            ';
+  let body;
+  if (j === 'SKS') {
+    const dashB = { top: NB, left: NB, right: NB, bottom: { style: X.BorderStyle.DASHED, size: 10, color: '000000' } };
+    body = [kop()].concat(judul('SURAT REKOMENDASI KESEHATAN'), [
+      J('Yang bertanda tangan dibawah ini Dokter yang memeriksa, dengan mengingat sumpah pada waktu menerima jabatan menyatakan :'),
+      kv([['Nama', r.nama], ['Pangkat', r.pangkat], ['Nrp/Nip', r.nrp], ['Jabatan', r.jabatan], ['Kesatuan', r.kesatuan]], px(130), { pad: 7 }),
+      J('Telah diperiksa kesehatannya di Biddokkes Polda NTB dan berpendapat bahwa dari segi kesehatan yang bersangkutan Memenuhi Syarat untuk mengikuti:'),
+      table([[cell([P('')], 1400, { borders: dashB, verticalAlign: X.VerticalAlign.CENTER }), cell([P(r.keperluan || '', { alignment: AL.CENTER })], W - 2800, { verticalAlign: X.VerticalAlign.CENTER, margins: { top: 0, bottom: 0, left: 90, right: 90 } }), cell([P('')], 1400, { borders: dashB, verticalAlign: X.VerticalAlign.CENTER })]], [1400, W - 2800, 1400]),
+      J('Demikian surat keterangan ini dibuat di Biddokkes Polda NTB tanggal ' + tglIndo(r.tglPeriksa) + ' untuk dapat dipergunakan sebagaimana mestinya.'),
+      P('', SP(px(16), 0)),
+      ttd([P('Mataram,' + SPACES + bulanTahun(r.tglPeriksa), { alignment: AL.CENTER })], 'a.n KABIDDOKKES POLDA NTB'),
+      P([R('Catatan', { underline: {}, size: 22 }), R(' :', { size: 22 })], SP(px(30), px(2))),
+      kv([['Tinggi Badan', (r.tinggi || '') + ' Cm'], ['Berat Badan', (r.berat || '') + ' Kg'], ['Gol. Darah', '- ' + (r.golDarah || '') + ' -']].map(x => [R(x[0], { size: 22 }), R(x[1], { size: 22 })]), px(110), { pad: 1, width: 5200 }),
+      P('', SP(px(8), 0)),
+      table([
+        [cell([P(R('Kualitatif', { size: 22 }), { alignment: AL.CENTER })], 1725, { borders: { top: LINE, bottom: LINE, left: LINE, right: LINE } }), cell([P(R('Kuantitatif', { size: 22 }), { alignment: AL.CENTER })], 1725, { borders: { top: LINE, bottom: LINE, left: LINE, right: LINE } })],
+        [cell([P(R(r.kualitatif || '', { size: 22 }), { alignment: AL.CENTER })], 1725, { borders: { top: LINE, bottom: LINE, left: LINE, right: LINE } }), cell([P(R(r.kuantitatif || '', { size: 22 }), { alignment: AL.CENTER })], 1725, { borders: { top: LINE, bottom: LINE, left: LINE, right: LINE } })]
+      ], [1725, 1725])
+    ]);
+  } else if (j === 'NIKAH') {
+    const cal = r.jenisPasangan === 'Calon Suami' ? 'suaminya' : 'istrinya';
+    body = [kop()].concat(judul('SURAT KETERANGAN DOKTER'), [
+      J('Yang bertanda tangan di bawah ini Dokter yang memeriksa, dengan mengingat sumpah pada waktu menerima jabatan, bahwa:'),
+      kv([['1.', 'N a m a', r.nama], ['2.', 'Pangkat Nrp/Nip', (r.pangkat || '') + '/' + (r.nrp || '')], ['3.', 'J a b a t a n', r.jabatan], ['4.', 'Kesatuan', r.kesatuan]], px(180), { ind: px(22), num: true }),
+      P(R('Berikut dengan calon ' + cal + '  :', { italics: true }), Object.assign({ indent: { left: px(22) } }, SP(px(12), px(6)))),
+      kv([['1.', 'N a m a', r.pNama], ['2.', 'TTL', (r.pTempatLahir || '') + ', ' + tglIndo(r.pTglLahir)], ['3.', 'Suku / Bangsa', (r.pSuku || '') + ' / ' + (r.pBangsa || '')], ['4.', 'P e k e r j a a n', r.pPekerjaan], ['5.', 'A g a m a', r.pAgama], ['6.', 'Alamat', r.pAlamat]], px(180), { ind: px(22), num: true }),
+      P('Di periksa kesehatan badannya dengan teliti :', Object.assign({ indent: { left: px(6) } }, SP(px(10), px(4)))),
+      kv([['Di', 'Biddokkes Polda NTB'], ['Pada tanggal', tglIndo(r.tglPeriksa)]], px(130), { ind: px(40) }),
+      J('Atas permintaan dari ' + (r.permintaanDari || '') + ' Nomor: ' + (r.noSuratRek || '') + ' tanggal ' + tglIndo(r.tglSuratRek) + ' berpendapat bahwa:'),
+      kv([['Orang tersebut di atas', [P(msTms(r.hasil, ' / ')), P('untuk melangsungkan perkawinannya.')]]], px(228)),
+      P('Demikian untuk maklum dan dipergunakan sebagaimana mestinya.', SP(px(10), px(10))),
+      ttd([P('Mataram,' + SPACES + bulanTahun(r.tglPeriksa), { alignment: AL.CENTER })], 'a.n KABIDDOKKES POLDA NTB')
+    ]);
+  } else {
+    const logo = await imgData('logo-polri.png', 68);
+    const temb = String(s.SENPI_TEMBUSAN || '').split(/\r?\n|\|/).map(x => x.trim()).filter(Boolean);
+    const L1 = px(44), H1 = px(34), L2 = L1 + px(28), H2 = px(24);
+    const li = (n, runs, lvl) => P([R(n + '\t')].concat(runs), { alignment: AL.JUSTIFIED, indent: lvl === 2 ? { left: L2, hanging: H2 } : { left: L1, hanging: H1 }, spacing: { before: 0, after: lvl === 2 ? 0 : px(9) } });
+    const wT = px(320);
+    body = [kop()].concat(
+      logo ? [P(new X.ImageRun({ data: logo.data, transformation: { width: logo.w, height: logo.h } }), { alignment: AL.CENTER, spacing: { before: px(10), after: 0, line: 240, lineRule: X.LineRuleType.AUTO } })] : [],
+      judul('SURAT KETERANGAN HASIL PEMERIKSAAN KESEHATAN', px(8)), [
+        P([R('1.\tRujukan:')], { indent: { left: L1, hanging: H1 }, spacing: { before: px(14), after: 0 } }),
+        li('a.', [R(s.SENPI_RUJUKAN_A || '')], 2),
+        li('b.', [R('Nota Dinas Karolog Polda NTB Nomor: ' + (r.noNotaDinas || '') + ' tentang permintaan diterbitkan surat keterangan kesehatan untuk izin pinjam pakai dan membawa senjata api organik Polri.')], 2),
+        P('', SP(0, px(9))),
+        P([R('2.\tDengan ini menerangkan bahwa hasil pemeriksaan terhadap:')], { indent: { left: L1, hanging: H1 }, spacing: { before: 0, after: px(2) } }),
+        kv([['a.', 'Nama', r.nama], ['b.', 'Tempat dan tanggal lahir', (r.tempatLahir || '') + ', ' + tglIndo(r.tglLahir)], ['c.', 'Jenis kelamin', r.jk], ['d.', 'Agama', r.agama], ['e.', 'Pangkat/NRP', (r.pangkat || '') + '/' + (r.nrp || '')], ['f.', 'Jabatan', r.jabatan], ['g.', 'Kesatuan', r.kesatuan], ['h.', 'Alamat kantor', r.alamatKantor]], px(190), { ind: L1, num: true, pad: 1 }),
+        P('yang bersangkutan dinyatakan:', { indent: { left: L2 }, spacing: { before: px(8), after: 0 } }),
+        P(msTms(r.hasil, '/').concat([R(' untuk mendapatkan surat izin Pinjam Pakai Senjata Api/Surat Izin Pinjam Pakai dan Membawa Senjata Api')]), { alignment: AL.JUSTIFIED, indent: { left: L2 }, spacing: { before: 0, after: px(9) } }),
+        li('3.', [R('Hasil pemeriksaan kesehatan ini berlaku selama 1 (satu) tahun sejak dikeluarkan, apabila di kemudian hari ternyata terdapat kekeliruan, surat keterangan hasil penelitian ini akan dicabut.')]),
+        P('', SP(px(6), 0)),
+        ttd([P('Dikeluarkan di: Mataram'), P(R('pada tanggal :' + SPACES + bulanTahun(r.tglPeriksa), { underline: {} }))], 'a.n. KABIDDOKKES POLDA NTB', wT,
+          [P(R('Tembusan :', { size: 22 }))].concat(temb.map((t, i) => P(R((i + 1) + '.\t' + t, { size: 22 }), { indent: { left: px(20), hanging: px(20) } }))))
+      ]);
+  }
+  const doc = new X.Document({
+    creator: 'Biddokkes Polda NTB',
+    title: (r.nomorSurat || '') + ' - ' + (r.nama || ''),
+    styles: { default: { document: { run: { font: 'Arial', size: 24 }, paragraph: { spacing: { line: 264 } } } } },
+    sections: [{
+      properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: 794, right: 1020, bottom: 794, left: 1247, header: 400, footer: 400 } } },
+      children: body
+    }]
+  });
+  return X.Packer.toBlob(doc);
+}
+
 /* ─────────────────────────────── Peristiwa ────────────────────────── */
+const recFrom = el => {
+  if (el.closest('#vDone')) return DONE ? [DONE.j, DONE.rec] : [null, null];
+  if (el.closest('#mDetail')) return [D.j, curRec()];
+  return [ADM.tab, findRec(ADM.tab, el.dataset.id)];
+};
 const ACTIONS = {
-  admin: () => { location.hash = '#admin'; },
   home: () => { location.hash = '#/'; },
   review: review, send: send, clearDraft: clearDraft,
   toSec: el => { const s = $('#sec' + el.dataset.i); if (s) s.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
   close: el => closeTop(el.closest('.modal').id),
-  togglePw: el => {
-    const inp = el.parentNode.querySelector('input'), showPw = inp.type === 'password';
-    inp.type = showPw ? 'text' : 'password';
-    el.setAttribute('aria-label', showPw ? 'Sembunyikan password' : 'Tampilkan password');
-    el.querySelector('use').setAttribute('href', showPw ? '#i-eyeoff' : '#i-eye');
-  },
-  logout: logout,
   tab: el => setTab(el.dataset.j),
-  status: el => { ADM.status = el.dataset.s; ADM.limit = PAGE; renderToolbar(); renderList(); },
   open: el => openDetail(ADM.tab, el.dataset.id),
-  quick: el => quickPrint(el.dataset.id),
+  pdf: el => { const x = recFrom(el); downloadPDF(x[0], x[1], el); },
+  word: el => { const x = recFrom(el); downloadWord(x[0], x[1], el); },
+  print: el => { const x = recFrom(el); if (x[1]) printRecs(x[0], [x[1]]); },
   del: el => delRecs([el.dataset.id]),
+  delCurrent: () => { if (D.id) delRecs([D.id], D.j); },
   clearSel: () => { ADM.sel.clear(); renderList(); },
-  issueSel: () => issueSelected(),
+  printSel: () => { const recs = filtered().filter(r => ADM.sel.has(r.id)).reverse(); printRecs(ADM.tab, recs); },
   delSel: () => delRecs(Array.from(ADM.sel)),
   more: () => { ADM.limit += PAGE; renderList(); },
-  clearFilters: () => { ADM.status = ''; ADM.q = ''; renderToolbar(); renderList(); },
+  clearFilters: () => { ADM.q = ''; renderToolbar(); renderList(); },
   refresh: () => sync(true, true),
   sound: toggleSound,
   menu: () => drawer(true),
   unmenu: () => drawer(false),
   qr: openQR,
-  settings: openSettings,
-  closeDetail: () => requestCloseDetail(),
-  saveDetail: () => saveDetail(),
-  issue: () => issueCurrent(),
-  delCurrent: () => { if (D.id) delRecs([D.id], D.j); },
+  closeDetail: closeDetail,
   pane: el => setPane(el.dataset.pane),
-  saveSettings: () => saveSettings(),
+  archiveNow: () => { const r = curRec(); if (r) archiveRecs(D.j, [r]); },
   qrPick: el => { QR.t = el.dataset.t; renderQR(); },
   qrCopy: qrCopy, qrDownload: qrDownload, qrPrint: qrPrint,
   askOk: () => { if (ASK) ASK(true); },
@@ -2144,7 +2187,6 @@ function onInput(ev) {
   const fld = t.closest ? t.closest('.field') : null;
   if (fld && fld.classList.contains('bad')) setErr(fld, '');
   if (t.closest && t.closest('#fBody')) { updateProgress(); saveDraftSoon(); }
-  else if (t.closest && t.closest('#dForm')) { D.dirty = true; updateDetailButtons(); previewSoon(); }
 }
 document.addEventListener('input', onInput);
 document.addEventListener('change', ev => {
@@ -2167,7 +2209,6 @@ document.addEventListener('change', ev => {
   onInput(ev);
 });
 $('#q').addEventListener('input', debounce(() => { ADM.q = $('#q').value; ADM.limit = PAGE; renderList(); }, 120));
-$('#loginForm').addEventListener('submit', ev => { ev.preventDefault(); login(); });
 $('#fBody').addEventListener('submit', ev => { ev.preventDefault(); review(); });
 document.addEventListener('keydown', ev => {
   const typing = /^(INPUT|TEXTAREA|SELECT)$/.test((ev.target && ev.target.tagName) || '');
@@ -2177,12 +2218,7 @@ document.addEventListener('keydown', ev => {
   }
   if (ev.key === 'Tab' && MODALS.length) { trapFocus(ev); return; }
   const mod = ev.ctrlKey || ev.metaKey;
-  if (mod && (ev.key === 's' || ev.key === 'S') && isOpen('mDetail')) { ev.preventDefault(); saveDetail(); return; }
-  if (mod && (ev.key === 'p' || ev.key === 'P') && document.body.dataset.view === 'vAdmin') {
-    ev.preventDefault();
-    if (isOpen('mDetail')) issueCurrent(); else toast('Buka satu data atau centang beberapa data, lalu tekan tombol cetak.', 'info');
-    return;
-  }
+  if (mod && (ev.key === 'p' || ev.key === 'P') && isOpen('mDetail')) { ev.preventDefault(); const r = curRec(); if (r) printRecs(D.j, [r]); return; }
   if (ev.key === '/' && !typing && !MODALS.length && document.body.dataset.view === 'vAdmin') { ev.preventDefault(); $('#q').focus(); }
 });
 const tip = $('#tip');
@@ -2193,10 +2229,11 @@ function showTip(el) {
   tip.style.left = x + 'px';
   tip.style.top = (r.top + window.scrollY - tip.offsetHeight - 8) + 'px';
 }
-document.addEventListener('pointerover', ev => { const b = ev.target.closest && ev.target.closest('[data-tip]'); if (b) showTip(b); });
+document.addEventListener('pointerover', ev => { const b = ev.target.closest && ev.target.closest('[data-tip]'); if (b && ev.pointerType !== 'touch') showTip(b); });
 document.addEventListener('pointerout', ev => { if (ev.target.closest && ev.target.closest('[data-tip]')) tip.hidden = true; });
-document.addEventListener('focusin', ev => { if (ev.target.dataset && ev.target.dataset.tip) showTip(ev.target); });
+document.addEventListener('focusin', ev => { if (ev.target.dataset && ev.target.dataset.tip && ev.target.matches(':focus-visible')) showTip(ev.target); });
 document.addEventListener('focusout', ev => { if (ev.target.dataset && ev.target.dataset.tip) tip.hidden = true; });
+document.addEventListener('click', () => { tip.hidden = true; }, true);
 window.addEventListener('scroll', () => { tip.hidden = true; }, { passive: true });
 window.addEventListener('resize', debounce(() => { if (isOpen('mDetail')) fitPreview(); }, 100));
 function setNet(online) { $('#net').hidden = online; }
@@ -2208,13 +2245,13 @@ window.addEventListener('online', () => {
   if ($('#sys').dataset.s !== 'ok') loadConfig();
 });
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible' && document.body.dataset.view === 'vAdmin' && ADM.token && Date.now() - ADM.lastSync > 8000) sync(false);
+  if (document.visibilityState === 'visible' && document.body.dataset.view === 'vAdmin' && Date.now() - ADM.lastSync > 8000) sync(false);
 });
 window.addEventListener('hashchange', route);
+window.addEventListener('beforeunload', ev => { if (ADM.healing.size && DONE && DONE.arch === 'busy') { ev.preventDefault(); ev.returnValue = ''; } });
 
 /* ─────────────────────────────── Mulai ────────────────────────────── */
 buildMenu();
-loadToken();
 const savedDays = store.get('suket_days');
 ADM.days = savedDays !== null && [0, 30, 90, 365].indexOf(Number(savedDays)) >= 0 ? Number(savedDays) : 90;
 ADM.sound = !!store.get('suket_sound');
