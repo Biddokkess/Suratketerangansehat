@@ -2,12 +2,13 @@
 <html lang="id">
 <head>
 <!--
-  SUKET BIDDOKKES POLDA NTB — Satu website: Buat surat & Data surat (versi 3.0)
+  SUKET BIDDOKKES POLDA NTB — Satu website: Buat surat & Data surat (versi 3.5)
   1. Isi API_URL (cari "KONFIGURASI" di bagian <script> bawah) dengan URL Web App /exec dari Apps Script.
   2. Upload file ini sebagai index.html ke GitHub Pages (logo Dokkes sudah tertanam di file ini; logo-polri.png opsional untuk Suket Senpi)
      (logo opsional; tanpa logo tampil ikon cadangan).
   3. Halaman Data surat (tersembunyi): klik kata "petugas" di kalimat halaman depan, atau tambahkan #/data di akhir alamat.
-     Tanpa password. Surat langsung terbit saat formulir dikirim, PDF tersimpan otomatis ke Google Drive.
+     Surat langsung terbit saat formulir dikirim; data cukup di Spreadsheet, PDF/Word dibuat saat diunduh.
+     PIN Data surat opsional (tab Pengaturan → PIN_DATA).
 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -352,6 +353,8 @@ a.secret:focus-visible{outline:none}
 .tb-new:hover{background:var(--accent-hi);color:var(--accent-ink);border-color:var(--accent-hi)}
 @media (min-width:1024px){.tb-new{display:none}}
 .p-info{background:rgba(43,143,208,.14);border-color:rgba(43,143,208,.55)}
+.p-info .i{color:#6FB8EA}
+.p-mute{background:transparent;border-color:var(--line-2);color:var(--text-3);font-weight:500}
 .p-info .spin{width:12px;height:12px;color:#6FB8EA}
 .side-link .ext{width:14px;height:14px;margin-left:auto;color:var(--text-3)}
 .main{min-width:0;padding:20px 28px 110px}
@@ -744,10 +747,12 @@ ol.alpha li{padding-left:4px}
       <nav id="sideNav" aria-label="Jenis surat"></nav>
       <a class="side-new" href="#/"><svg class="i"><use href="#i-plus"/></svg>Buat surat baru</a>
       <p class="side-h">Alat</p>
+      <button class="side-link" data-act="rekap"><svg class="i"><use href="#i-sheet"/></svg>Rekap bulanan (Excel)</button>
       <button class="side-link" data-act="qr"><svg class="i"><use href="#i-qr"/></svg>QR code formulir</button>
-      <a class="side-link" id="folderLink" href="#" target="_blank" rel="noopener" hidden><svg class="i"><use href="#i-doc"/></svg>Folder arsip PDF<svg class="i ext"><use href="#i-ext"/></svg></a>
+      <a class="side-link" id="folderLink" href="#" target="_blank" rel="noopener" hidden><svg class="i"><use href="#i-doc"/></svg>Folder salinan PDF<svg class="i ext"><use href="#i-ext"/></svg></a>
       <a class="side-link" id="sheetLink" href="#" target="_blank" rel="noopener" hidden><svg class="i"><use href="#i-sheet"/></svg>Buka spreadsheet<svg class="i ext"><use href="#i-ext"/></svg></a>
-      <p class="side-foot">Folder arsip dan spreadsheet hanya bisa dibuka akun Google pemilik.</p>
+      <button class="side-link" data-act="lockPin" id="lockLink" hidden><svg class="i"><use href="#i-lock"/></svg>Kunci perangkat ini</button>
+      <p class="side-foot">Folder dan spreadsheet hanya bisa dibuka akun Google pemilik.</p>
     </aside>
     <div class="scrim" data-act="unmenu"></div>
     <main class="main">
@@ -821,6 +826,24 @@ ol.alpha li{padding-left:4px}
   </div>
 </div>
 
+<div class="modal" id="mPin" role="dialog" aria-modal="true" aria-labelledby="pinT" hidden>
+  <div class="m-panel sm" tabindex="-1">
+    <div class="m-head"><span class="ask-ic"><svg class="i"><use href="#i-lock"/></svg></span><div><h2 id="pinT">Data surat terkunci</h2><p>Masukkan PIN untuk membuka Data surat di perangkat ini.</p></div></div>
+    <form class="m-body" id="pinForm" novalidate>
+      <div class="field" id="pinField"><label for="pinIn">PIN</label><input class="inp mono" id="pinIn" type="password" inputmode="numeric" autocomplete="off" data-autofocus><p class="err" id="pinErr"></p></div>
+    </form>
+    <div class="m-foot"><button class="btn" data-act="pinCancel">Kembali</button><button class="btn btn-pri" data-act="pinOk" id="bPin">Buka</button></div>
+  </div>
+</div>
+
+<div class="modal" id="mRekap" role="dialog" aria-modal="true" aria-labelledby="rkT" hidden>
+  <div class="m-panel sm" tabindex="-1">
+    <div class="m-head"><span class="ask-ic"><svg class="i"><use href="#i-sheet"/></svg></span><div><h2 id="rkT">Rekap bulanan</h2><p>File Excel berisi ringkasan per jenis surat dan per kesatuan, plus daftar lengkap setiap surat.</p></div><button class="icon-btn" data-act="close" aria-label="Tutup"><svg class="i"><use href="#i-x"/></svg></button></div>
+    <div class="m-body"><div class="field"><label for="rkBulan">Bulan</label><input class="inp" id="rkBulan" type="month"></div></div>
+    <div class="m-foot"><button class="btn" data-act="close">Batal</button><button class="btn btn-pri" data-act="rekapGo" id="bRekap"><svg class="i"><use href="#i-download"/></svg>Unduh Excel</button></div>
+  </div>
+</div>
+
 <div class="modal" id="mAsk" role="alertdialog" aria-modal="true" aria-labelledby="askT" aria-describedby="askM" hidden>
   <div class="m-panel sm" tabindex="-1">
     <div class="m-head"><span class="ask-ic" id="askIc"></span><div><h2 id="askT"></h2><p id="askM"></p></div></div>
@@ -849,7 +872,7 @@ const API_STATE = /^https:\/\/script\.google\.com\/(a\/[^/]+\/)?macros\/s\/[\w-]
   : /^https:\/\/script\.google\.com\/.*\/dev$/.test(URL_API) ? 'dev'
   : /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?\//.test(URL_API) ? 'ok' : 'none';
 const QS = new URLSearchParams(location.search);
-const POLL_MS = Math.max(5, Number(QS.get('poll')) || 20) * 1000;
+const POLL_MS = Math.max(5, Number(QS.get('poll')) || 30) * 1000;
 const PAGE = 120;
 
 /* ─────────────────────────────── Bantuan umum ─────────────────────── */
@@ -971,7 +994,48 @@ function toast(msg, type, ms) {
   el._t = setTimeout(el._hide, dur);
 }
 function clearToasts(type) { Array.prototype.slice.call($('#toasts').children).forEach(x => { if (!type || x._type === type) { clearTimeout(x._t); x._hide(); } }); }
-function fail(e) { toast((e && e.message) || 'Terjadi kesalahan.', 'err'); }
+function fail(e) {
+  if (e && e.code === 'PIN') { askPin(e.message); return; }
+  toast((e && e.message) || 'Terjadi kesalahan.', 'err');
+}
+/* PIN opsional halaman Data surat (diisi di tab Pengaturan → PIN_DATA) */
+const PIN_ACTIONS = ['data', 'remove', 'archive', 'reprint', 'save', 'rekap'];
+const PIN = { v: store.get('suket_pin') || '', asking: false };
+function askPin(msg) {
+  if (document.body.dataset.view !== 'vAdmin') return;
+  const bad = msg && /salah|banyak/i.test(msg);
+  setErr($('#pinField'), bad ? msg : '');
+  if (bad) { PIN.v = ''; store.del('suket_pin'); }
+  $('#pinIn').value = '';
+  if (!isOpen('mPin')) openModal('mPin');
+  PIN.asking = true;
+}
+async function submitPin() {
+  const v = $('#pinIn').value.trim();
+  if (!v) { setErr($('#pinField'), 'Masukkan PIN.'); return; }
+  const btn = $('#bPin');
+  busy(btn, true, 'Memeriksa');
+  PIN.v = v;
+  try {
+    const r = await api('data', { days: ADM.days }, { retries: 0 });
+    store.set('suket_pin', v);
+    PIN.asking = false;
+    closeModal('mPin');
+    applyData(r);
+    setSync('ok');
+    $('#lockLink').hidden = false;
+  } catch (e) {
+    PIN.v = '';
+    setErr($('#pinField'), e.code === 'PIN' || e.code === 'PIN_LOCK' ? e.message : e.message);
+  } finally { busy(btn, false); }
+}
+function lockPin() {
+  PIN.v = ''; store.del('suket_pin'); store.del('suket_cache');
+  ADM.loaded = false; ADM.rev = null; ADM.data = { SKS: [], NIKAH: [], SENPI: [] };
+  $('#lockLink').hidden = true;
+  location.hash = '#/';
+  toast('Data surat dikunci di perangkat ini.', 'ok');
+}
 function busy(btn, on, label) {
   if (!btn) return;
   if (on) {
@@ -1012,6 +1076,7 @@ function closeTop(id) {
   id = id || MODALS[MODALS.length - 1];
   if (!id) return;
   if (id === 'mAsk') { if (ASK) ASK(false); return; }
+  if (id === 'mPin') { PIN.asking = false; closeModal('mPin'); location.hash = '#/'; return; }
   if (id === 'mDetail') { closeDetail(); return; }
   closeModal(id);
 }
@@ -1048,6 +1113,7 @@ async function api(action, payload, opt) {
   opt = opt || {};
   if (API_STATE !== 'ok') throw new ApiError(API_STATE === 'dev' ? 'API_URL di index.html masih memakai URL /dev. Gunakan URL deployment yang berakhiran /exec.' : 'Alamat server belum diatur. Isi API_URL di index.html dengan URL Web App Apps Script.', 'CONFIG');
   const body = Object.assign({ action: action }, payload || {});
+  if (PIN_ACTIONS.indexOf(action) >= 0 && PIN.v) body.pin = PIN.v;
   const retries = opt.retries == null ? 1 : opt.retries;
   let last = null;
   for (let i = 0; i <= retries; i++) {
@@ -1298,10 +1364,6 @@ async function send() {
     F.built = false;
     F.sending = false;
     location.replace('#/selesai');
-    if (!rec.pdf) {
-      const out = await archiveRecs(DONE.j, [rec], { silent: true });
-      if (DONE && DONE.rec.id === rec.id) { DONE.arch = out && out.ok ? 'ok' : 'err'; DONE.err = out && out.last ? out.last.message : ''; renderDoneArch(); }
-    }
   } catch (e) {
     const box = $('#fErr');
     if (e.code === 'DUPLICATE') {
@@ -1401,10 +1463,18 @@ async function sync(force, manual) {
     ADM.lastSync = Date.now();
     setSync('ok');
     pulseSync();
-    healArchive();
   } catch (e) {
-    setSync('err', e.message);
-    if (manual || !ADM.loaded) toast(e.message, 'err');
+    if (e.code === 'PIN' || e.code === 'PIN_LOCK') {
+      setSync('err', 'Perlu PIN');
+      ADM.data = { SKS: [], NIKAH: [], SENPI: [] }; ADM.loaded = false; ADM.rev = null;
+      store.del('suket_cache');
+      renderAll();
+      $('#list').innerHTML = '<div class="empty"><svg class="i"><use href="#i-lock"/></svg><h3>Data surat terkunci</h3><p>Masukkan PIN untuk melihat data surat.</p><button class="btn btn-pri" data-act="pinOpen">Masukkan PIN</button></div>';
+      askPin(e.message);
+    } else {
+      setSync('err', e.message);
+      if (manual || !ADM.loaded) toast(e.message, 'err');
+    }
   } finally {
     ADM.syncing = false;
     $('#list').classList.remove('stale');
@@ -1469,7 +1539,7 @@ function applyDelta(r) {
 function startPoll() {
   stopPoll();
   const tick = async () => {
-    if (document.body.dataset.view === 'vAdmin' && document.visibilityState !== 'hidden' && navigator.onLine !== false && !ADM.busy) await sync(false);
+    if (document.body.dataset.view === 'vAdmin' && document.visibilityState !== 'hidden' && navigator.onLine !== false && !ADM.busy && !PIN.asking) await sync(false);
     if (document.body.dataset.view === 'vAdmin') ADM.pollT = setTimeout(tick, POLL_MS);
   };
   ADM.pollT = setTimeout(tick, POLL_MS);
@@ -1479,7 +1549,7 @@ function setSync(state, msg) {
   const el = $('#sync');
   el.dataset.s = state;
   const d = new Date();
-  $('#syncTxt').innerHTML = state === 'busy' ? 'Memperbarui' : state === 'err' ? 'Gagal, coba lagi' : '<span class="sync-l">Diperbarui </span>' + pad(d.getHours()) + '.' + pad(d.getMinutes());
+  $('#syncTxt').innerHTML = state === 'busy' ? 'Memperbarui' : state === 'err' ? (msg === 'Perlu PIN' ? 'Terkunci' : 'Gagal, coba lagi') : '<span class="sync-l">Diperbarui </span>' + pad(d.getHours()) + '.' + pad(d.getMinutes());
   el.title = state === 'err' ? (msg || 'Gagal memperbarui') + ' Klik untuk mencoba lagi.' : 'Diperbarui otomatis setiap ' + Math.round(POLL_MS / 1000) + ' detik. Klik untuk memperbarui sekarang.';
 }
 function pulseSync() { const el = $('#sync'); el.classList.remove('beat'); void el.offsetWidth; el.classList.add('beat'); }
@@ -1537,7 +1607,7 @@ function renderBoard() {
   all.forEach(r => { const d = String(r.waktu || '').slice(0, 10); perDay[d] = (perDay[d] || 0) + 1; });
   const masuk = perDay[T] || 0, kemarin = perDay[addDaysISO(T, -1)] || 0;
   const bulan = all.filter(r => String(r.waktu || '').slice(0, 7) === ym).length;
-  const drive = all.filter(r => r.pdf).length;
+  const printed = all.filter(r => Number(r.cetak) > 0).length;
   const trend = [];
   for (let i = 11; i >= 0; i--) { const d = addDaysISO(T, -i); trend.push([d, perDay[d] || 0]); }
   const max = Math.max.apply(null, [1].concat(trend.map(x => x[1])));
@@ -1546,7 +1616,7 @@ function renderBoard() {
   $('#board').innerHTML =
     `<div class="kpi"><p class="kpi-l"><i class="key" style="--k:var(--info)" aria-hidden="true"></i>Surat hari ini</p><p class="kpi-v">${L ? masuk : '–'}</p><p class="kpi-s">Kemarin ${L ? kemarin : '–'}</p><div class="spark" role="group" aria-label="Jumlah surat per hari, 12 hari terakhir">${spark}</div></div>` +
     `<div class="kpi"><p class="kpi-l"><svg class="i" style="color:var(--good-hi)" aria-hidden="true"><use href="#i-check"/></svg>Terbit bulan ini</p><p class="kpi-v">${L ? bulan : '–'}</p><p class="kpi-s">${BULAN[+ym.slice(5, 7) - 1]} ${ym.slice(0, 4)}</p></div>` +
-    `<div class="kpi"><p class="kpi-l"><svg class="i" style="color:var(--accent)" aria-hidden="true"><use href="#i-doc"/></svg>PDF di Google Drive</p><p class="kpi-v">${L ? drive : '–'}</p><p class="kpi-s">${L ? (all.length - drive ? (all.length - drive) + ' sedang disimpan' : 'Semua sudah tersimpan') : '–'}</p></div>` +
+    `<div class="kpi"><p class="kpi-l"><svg class="i" style="color:var(--accent)" aria-hidden="true"><use href="#i-print"/></svg>Sudah dicetak</p><p class="kpi-v">${L ? printed : '–'}</p><p class="kpi-s">${L ? (all.length - printed ? (all.length - printed) + ' belum dicetak' : 'Semua sudah dicetak') : '–'}</p></div>` +
     `<div class="kpi"><p class="kpi-l"><i class="key" style="--k:#5B7A90" aria-hidden="true"></i>Total surat</p><p class="kpi-v">${L ? all.length : '–'}</p><p class="kpi-s">${ADM.days ? (ADM.days === 365 ? '1 tahun' : ADM.days + ' hari') + ' terakhir' : 'Semua data'}</p></div>`;
 }
 function renderToolbar() { if ($('#q').value !== ADM.q) $('#q').value = ADM.q; }
@@ -1570,15 +1640,16 @@ function renderList() {
   }
   const shown = rows.slice(0, ADM.limit);
   const allSel = shown.every(r => ADM.sel.has(r.id));
-  box.innerHTML = `<div class="list-h"><label class="row-ck"><input type="checkbox" id="selAll"${allSel ? ' checked' : ''} aria-label="Pilih semua yang tampil"></label><span class="lh-all">Pilih semua</span><span class="lh-name">Nama</span><span class="lh-no">Nomor surat</span><span class="lh-time">Masuk</span><span class="lh-st">Arsip</span><span class="lh-count">${rows.length} surat</span></div>` +
+  box.innerHTML = `<div class="list-h"><label class="row-ck"><input type="checkbox" id="selAll"${allSel ? ' checked' : ''} aria-label="Pilih semua yang tampil"></label><span class="lh-all">Pilih semua</span><span class="lh-name">Nama</span><span class="lh-no">Nomor surat</span><span class="lh-time">Masuk</span><span class="lh-st">Status</span><span class="lh-count">${rows.length} surat</span></div>` +
     `<div role="list">${shown.map(rowHTML).join('')}</div>` +
     (rows.length > shown.length ? `<div class="list-more"><button class="btn" data-act="more">Tampilkan ${Math.min(PAGE, rows.length - shown.length)} surat berikutnya</button></div>` : '');
   updateSel();
 }
 function drivePill(r) {
-  if (r.pdf) return '<span class="pill p-good"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Di Drive</span>';
   if (ADM.healing.has(r.id)) return '<span class="pill p-info"><span class="spin" aria-hidden="true"></span>Menyimpan</span>';
-  return '<span class="pill p-warn"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg>Belum di Drive</span>';
+  const n = Number(r.cetak) || 0;
+  const c = n ? `<span class="pill p-good"><svg class="i" aria-hidden="true"><use href="#i-print"/></svg>Dicetak${n > 1 ? ' ' + n + 'x' : ''}</span>` : '<span class="pill p-mute">Belum dicetak</span>';
+  return c + (r.pdf ? ' <span class="pill p-info" title="Ada salinan PDF di Google Drive"><svg class="i" aria-hidden="true"><use href="#i-doc"/></svg>Drive</span>' : '');
 }
 function rowHTML(r) {
   const sel = ADM.sel.has(r.id), id = esc(r.id);
@@ -1674,6 +1745,60 @@ async function delRecs(ids, j) {
   finally { ADM.busy--; }
 }
 
+/* Rekap bulanan → Excel */
+function openRekap() {
+  drawer(false);
+  const el = $('#rkBulan');
+  if (!el.value) el.value = (ADM.today || todayISO()).slice(0, 7);
+  openModal('mRekap');
+}
+async function rekapGo() {
+  const bulan = $('#rkBulan').value;
+  if (!/^\d{4}-\d{2}$/.test(bulan)) { toast('Pilih bulan dulu.', 'err'); return; }
+  const btn = $('#bRekap');
+  busy(btn, true, 'Menyiapkan');
+  try {
+    const [res] = await Promise.all([
+      api('rekap', { bulan: bulan }, { retries: 1, timeout: 60000 }),
+      loadAny(['https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js', 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js'], () => !!window.XLSX)
+    ]);
+    const X = window.XLSX, wb = X.utils.book_new();
+    const recs = {};
+    JENIS.forEach(j => {
+      const ks = (res.keys && res.keys[j]) || [];
+      recs[j] = ((res.rows && res.rows[j]) || []).map(row => { const o = {}; ks.forEach((k, i) => { o[k] = row[i] == null ? '' : String(row[i]); }); return o; })
+        .sort((a, b) => String(a.waktu).localeCompare(String(b.waktu)));
+    });
+    const judul = 'Rekap Surat Keterangan Sehat Biddokkes Polda NTB — ' + bulanTahun(bulan + '-01');
+    // Ringkasan
+    const kes = {};
+    JENIS.forEach(j => recs[j].forEach(r => { const k = r.kesatuan || '(kosong)'; kes[k] = kes[k] || { SKS: 0, NIKAH: 0, SENPI: 0 }; kes[k][j]++; }));
+    const total = JENIS.reduce((a, j) => a + recs[j].length, 0);
+    const ring = [[judul], [], ['Jenis surat', 'Jumlah']].concat(JENIS.map(j => [FORMS[j].title, recs[j].length]), [['Total', total], [], ['Kesatuan'].concat(JENIS.map(j => FORMS[j].short), ['Total'])]);
+    Object.keys(kes).sort().forEach(k => ring.push([k].concat(JENIS.map(j => kes[k][j]), [JENIS.reduce((a, j) => a + kes[k][j], 0)])));
+    const ws0 = X.utils.aoa_to_sheet(ring);
+    ws0['!cols'] = [{ wch: 40 }, { wch: 14 }, { wch: 14 }, { wch: 10 }, { wch: 10 }];
+    X.utils.book_append_sheet(wb, ws0, 'Ringkasan');
+    const COLS = {
+      SKS: [['Keperluan', 'keperluan'], ['Tinggi (cm)', 'tinggi'], ['Berat (kg)', 'berat'], ['Gol. Darah', 'golDarah'], ['Kualitatif', 'kualitatif'], ['Kuantitatif', 'kuantitatif']],
+      NIKAH: [['Nama Calon', 'pNama'], ['TTL Calon', 'pTTL'], ['Permintaan dari', 'permintaanDari'], ['Surat Rekomendasi', 'noSuratRek'], ['Tgl Surat Rekomendasi', 'tglSuratRek'], ['Hasil', 'hasil']],
+      SENPI: [['Tempat/Tgl Lahir', 'ttl'], ['Jenis Kelamin', 'jk'], ['Nomor Surat Rekomendasi', 'noNotaDinas'], ['Hasil', 'hasil']]
+    };
+    JENIS.forEach(j => {
+      const head = ['No', 'Nomor Surat', 'Tanggal', 'Nama', 'Pangkat', 'NRP/NIP', 'Jabatan', 'Kesatuan'].concat(COLS[j].map(c => c[0]), ['Penanda tangan', 'Dicetak']);
+      const rows = recs[j].map((r, i) => [i + 1, r.nomorSurat, tglIndo(r.tglPeriksa || String(r.waktu).slice(0, 10)), r.nama, r.pangkat, r.nrp, r.jabatan, r.kesatuan]
+        .concat(COLS[j].map(c => c[1] === 'pTTL' ? ttlCalon(r) : c[1] === 'ttl' ? ttlSenpi(r) : c[1] === 'tglSuratRek' ? tglIndo(r.tglSuratRek) : r[c[1]]), [r.ttdNama || '', Number(r.cetak) || 0]));
+      const ws = X.utils.aoa_to_sheet([[FORMS[j].title + ' — ' + bulanTahun(bulan + '-01')], [], head].concat(rows));
+      ws['!cols'] = head.map((h, i) => ({ wch: i === 0 ? 5 : Math.min(42, Math.max(h.length + 2, 12)) }));
+      X.utils.book_append_sheet(wb, ws, FORMS[j].short);
+    });
+    X.writeFile(wb, 'Rekap Suket ' + bulan + '.xlsx');
+    closeModal('mRekap');
+    toast('Rekap ' + bulanTahun(bulan + '-01') + ' diunduh (' + total + ' surat).', 'ok');
+  } catch (e) { fail(e); }
+  finally { busy(btn, false); }
+}
+
 /* Pratinjau surat */
 const D = { j: null, id: null, sig: '', edit: null };
 const curRec = () => D.id ? findRec(D.j, D.id) : null;
@@ -1705,7 +1830,7 @@ function buildDetail() {
     `<div><dt>Dicetak</dt><dd>${esc(r.cetak || '0')} kali${r.dicetak ? ', terakhir ' + esc(fmtWaktu(r.dicetak)) : ''}</dd></div>` +
     `</dl></section>` +
     FORMS[D.j].sections.map(sx => `<section class="rv-sect">${sx[0] ? `<h3>${esc(sx[0])}</h3>` : '<h3>Data formulir</h3>'}<dl class="rv">${sx[1].filter(k => keys.indexOf(k) >= 0).map(k => `<div><dt>${esc(fd(k).label)}</dt><dd>${esc(displayVal(k, r[k]))}</dd></div>`).join('')}</dl></section>`).join('') +
-    `<div class="d-pdf">${r.pdf ? `<a class="btn-link" href="${esc(r.pdf)}" target="_blank" rel="noopener"><svg class="i"><use href="#i-ext"/></svg>Buka PDF di Google Drive</a><span class="d-note">Hanya bisa dibuka akun pemilik Drive.</span>` : `<span>PDF belum tersimpan di Drive.</span><button class="btn-link" data-act="archiveNow" id="bArchive"><svg class="i"><use href="#i-save"/></svg>Simpan ke Drive sekarang</button>`}</div>`;
+    `<div class="d-pdf">${r.pdf ? `<a class="btn-link" href="${esc(r.pdf)}" target="_blank" rel="noopener"><svg class="i"><use href="#i-ext"/></svg>Buka salinan PDF di Google Drive</a><span class="d-note">Hanya bisa dibuka akun pemilik Drive.</span>` : `<span>Data surat tersimpan di Spreadsheet. PDF dibuat saat diunduh.</span><button class="btn-link" data-act="archiveNow" id="bArchive"><svg class="i"><use href="#i-save"/></svg>Simpan salinan PDF ke Drive (opsional)</button>`}</div>`;
   D.sig = JSON.stringify(r);
   $('#pWrap').innerHTML = RENDER[D.j](r, ADM.settings);
   fitPreview();
@@ -1725,7 +1850,7 @@ function buildEditPanel(r) {
   $('#dForm').innerHTML = `<section class="adm-box"><header class="sect-h"><h3>Edit surat</h3></header>
     <p class="adm-note"><svg class="i" aria-hidden="true"><use href="#i-info"/></svg><span>Klik teks yang <b>bergaris kuning</b> di surat lalu ketik langsung untuk mengubahnya. ${D.j === 'SKS' ? '' : 'Klik tulisan <b>Memenuhi Syarat</b> untuk menggantinya. '}Tekan <b>Simpan perubahan</b> bila sudah selesai.</span></p>
     ${keys.map(k => fieldHTML(k, x[k], 'e', true)).join('')}</section>
-    <p class="d-meta">Setelah disimpan, Spreadsheet ikut diperbarui dan PDF di Google Drive diganti dengan versi baru. Unduhan PDF dan Word juga memakai isi yang baru.</p>`;
+    <p class="d-meta">Setelah disimpan, Spreadsheet ikut diperbarui. Unduhan PDF, Word, dan cetak langsung memakai isi yang baru. Penanda tangan surat tidak berubah.</p>`;
   renderEditPreview();
 }
 function startEdit() {
@@ -1762,8 +1887,8 @@ async function saveEdit() {
     D.edit = null;
     mutated(res);
     buildDetail();
-    toast('Perubahan disimpan. PDF di Drive sedang diperbarui.', 'ok');
-    archiveRecs(D.j, [res.record], { silent: true });
+    toast('Perubahan disimpan.', 'ok');
+    if (r.pdf) archiveRecs(D.j, [res.record], { silent: true });   // salinan Drive (bila pernah disimpan) ikut diperbarui
   } catch (e) { fail(e); }
   finally { ADM.busy--; busy(btn, false); }
 }
@@ -1792,20 +1917,6 @@ function syncDetail() {
   if (JSON.stringify(r) !== D.sig) buildDetail();
 }
 
-/* Simpan otomatis PDF yang belum ada di Drive (mis. pengirim menutup halaman terlalu cepat) */
-function healArchive() {
-  const limit = Date.now() - 3 * 60000, recent = addDaysISO(ADM.today, -7);
-  JENIS.forEach(j => {
-    const todo = ADM.data[j].filter(r => {
-      if (r.pdf || !r.nomorSurat || ADM.healing.has(r.id)) return false;
-      const w = String(r.waktu || '');
-      if (w.slice(0, 10) < recent) return false;
-      const t = new Date(w.replace(' ', 'T') + '+08:00').getTime();
-      return !isNaN(t) && t < limit;
-    }).slice(0, 5);
-    if (todo.length) archiveRecs(j, todo, { silent: true });
-  });
-}
 
 /* QR code */
 const QR = { t: '', data: '' };
@@ -1880,11 +1991,22 @@ let EDITING = false;
 const V = (r, k, val) => { const t = val === undefined ? r[k] : val; return EDITING ? `<span class="ed" contenteditable="true" spellcheck="false" data-ek="${k}">${esc(t)}</span>` : esc(t); };
 const hasilHTML = (r, sep) => EDITING ? `<span class="ed-h" data-act="toggleHasil" title="Klik untuk mengganti Memenuhi / Tidak Memenuhi Syarat">${msTms(r.hasil, sep)}</span>` : msTms(r.hasil, sep);
 const nomorHTML = (r, opt) => EDITING ? V(r, 'nomorSurat') : r.nomorSurat ? esc(r.nomorSurat) : `<span class="belum">${esc((opt && opt.predicted) || '…')}</span>`;
-function ttd(j, s, top, an) {
-  const g = s['TTD_' + j + '_GAMBAR'] || TTD_IMG;
-  return `<div class="ttd">${top}<div>${an}</div><div>${esc(s['TTD_' + j + '_JABATAN'])}</div>
-    <div class="ttd-sp">${g ? `<img src="${esc(g)}" alt="" onerror="this.remove()">` : ''}</div>
-    <div class="u">${esc(s['TTD_' + j + '_NAMA'])}</div><div>${esc(s['TTD_' + j + '_PANGKAT'])}</div></div>`;
+/* Penanda tangan surat: diambil dari catatan surat itu sendiri (dikunci saat terbit).
+   Surat lama tidak ikut berubah walau penanda tangan di Pengaturan diganti. */
+const normN = v => String(v || '').toUpperCase().replace(/[^A-Z0-9]+/g, '');
+function signer(j, r, s) {
+  const nama = r.ttdNama || s['TTD_' + j + '_NAMA'] || '';
+  const g = s['TTD_' + j + '_GAMBAR'];
+  let img = '';
+  if (g && normN(s['TTD_' + j + '_NAMA']) === normN(nama)) img = g;      // gambar khusus milik penanda tangan saat ini
+  else if (/MIKEWIJAYANTI/.test(normN(nama))) img = TTD_IMG;             // tanda tangan dr. MIKE bawaan
+  return { jabatan: r.ttdJabatan || s['TTD_' + j + '_JABATAN'] || '', nama: nama, pangkat: r.ttdPangkat || s['TTD_' + j + '_PANGKAT'] || '', img: img };
+}
+function ttd(j, r, s, top, an) {
+  const g = signer(j, r, s);
+  return `<div class="ttd">${top}<div>${an}</div><div>${esc(g.jabatan)}</div>
+    <div class="ttd-sp">${g.img ? `<img src="${esc(g.img)}" alt="" onerror="this.remove()">` : ''}</div>
+    <div class="u">${esc(g.nama)}</div><div>${esc(g.pangkat)}</div></div>`;
 }
 function suratSKS(r, s, opt) {
   return `<div class="kertas sks">${kop()}
@@ -1894,7 +2016,7 @@ function suratSKS(r, s, opt) {
   <p class="j">Telah diperiksa kesehatannya di Biddokkes Polda NTB dan berpendapat bahwa dari segi kesehatan yang bersangkutan Memenuhi Syarat untuk mengikuti:</p>
   <div class="dash"><span></span><b>${V(r, 'keperluan')}</b><span></span></div>
   <p class="j">Demikian surat keterangan ini dibuat di Biddokkes Polda NTB tanggal ${esc(tglIndo(r.tglPeriksa))} untuk dapat dipergunakan sebagaimana mestinya.</p>
-  ${ttd('SKS', s, `<div>Mataram,${SP}${bulanTahun(r.tglPeriksa)}</div>`, 'a.n KABIDDOKKES POLDA NTB')}
+  ${ttd('SKS', r, s, `<div>Mataram,${SP}${bulanTahun(r.tglPeriksa)}</div>`, 'a.n KABIDDOKKES POLDA NTB')}
   <div class="catatan"><span class="u">Catatan</span> :
     ${kv([['Tinggi Badan', V(r, 'tinggi') + ' Cm'], ['Berat Badan', V(r, 'berat') + ' Kg'], ['Gol. Darah', '- ' + V(r, 'golDarah') + ' -']], '110px')}
     <table class="kk"><tr><th>Kualitatif</th><th>Kuantitatif</th></tr><tr><td>${V(r, 'kualitatif') || '&nbsp;'}</td><td>${V(r, 'kuantitatif') || '&nbsp;'}</td></tr></table>
@@ -1914,7 +2036,7 @@ function suratNIKAH(r, s, opt) {
   <p class="j">Atas permintaan dari ${V(r, 'permintaanDari')} Nomor: ${V(r, 'noSuratRek')} tanggal ${V(r, 'tglSuratRek', tglIndo(r.tglSuratRek))} berpendapat bahwa:</p>
   ${kv([['Orang tersebut di atas', `${hasilHTML(r, ' / ')}<br>untuk melangsungkan perkawinannya.`]], '228px')}
   <p>Demikian untuk maklum dan dipergunakan sebagaimana mestinya.</p>
-  ${ttd('NIKAH', s, `<div>Mataram,${SP}${bulanTahun(r.tglPeriksa)}</div>`, 'a.n KABIDDOKKES POLDA NTB')}
+  ${ttd('NIKAH', r, s, `<div>Mataram,${SP}${bulanTahun(r.tglPeriksa)}</div>`, 'a.n KABIDDOKKES POLDA NTB')}
   </div>`;
 }
 function suratSENPI(r, s, opt) {
@@ -1935,7 +2057,7 @@ function suratSENPI(r, s, opt) {
   </ol>
   <div class="senpi-foot">
     <div class="temb">Tembusan :${temb.length ? '<ol>' + temb.map(t => `<li>${esc(t)}</li>`).join('') + '</ol>' : ''}</div>
-    ${ttd('SENPI', s, `<div class="l">Dikeluarkan di: Mataram</div><div class="l"><span class="u">pada tanggal :${SP}${bulanTahun(r.tglPeriksa)}</span></div>`, 'a.n. KABIDDOKKES POLDA NTB')}
+    ${ttd('SENPI', r, s, `<div class="l">Dikeluarkan di: Mataram</div><div class="l"><span class="u">pada tanggal :${SP}${bulanTahun(r.tglPeriksa)}</span></div>`, 'a.n. KABIDDOKKES POLDA NTB')}
   </div></div>`;
 }
 /* Tanda tangan dr. MIKE WIJAYANTI DJOHAR (dipakai semua surat bila Pengaturan TTD_*_GAMBAR kosong) */
@@ -1969,7 +2091,7 @@ async function printHTML(html, fit) {
   document.body.classList.add('has-print');
   window.print();
 }
-/* PDF surat (dipakai untuk unduhan dan arsip Google Drive) */
+/* Pemuat pustaka (jsPDF, docx, xlsx) — hanya dimuat saat dibutuhkan */
 const LIBS = {};
 function loadScript(src) {
   if (!LIBS[src]) LIBS[src] = new Promise((res, rej) => {
@@ -1980,34 +2102,291 @@ function loadScript(src) {
   });
   return LIBS[src];
 }
+/* ───────────── PDF surat berbasis teks (tajam, kecil, cepat) — jsPDF ───────────── */
+const JSPDF_URL = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
 let PDFQ = Promise.resolve();
-function letterDoc(j, rec) {                     // antrean: elemen bantu dipakai bergantian
-  const p = PDFQ.then(() => makeLetterDoc(j, rec));
+function letterDoc(j, rec) {                               // antrean supaya pembuatan tidak saling tabrak
+  const p = PDFQ.then(() => makeLetterPdf(j, rec));
   PDFQ = p.catch(() => {});
   return p;
 }
-async function makeLetterDoc(j, rec) {
-  await Promise.all([
-    loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'),
-    loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js')
-  ]);
-  const fit = $('#pdfFit'), host = $('#pdfHost');
-  fit.innerHTML = RENDER[j](rec, ADM.settings);
-  await waitImages(fit);
-  fitPages(fit);
-  const k = fit.querySelector('.kertas');
-  host.innerHTML = '';
-  host.appendChild(k);
-  fit.innerHTML = '';
-  try {
-    const canvas = await window.html2canvas(k, { scale: 2, backgroundColor: '#ffffff', useCORS: true, logging: false,
-      onclone: d => { const x = d.getElementById('pdfHost'); if (x) x.style.visibility = 'visible'; } });
-    const pdf = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4', compress: true });
-    pdf.setProperties({ title: (rec.nomorSurat || '') + ' - ' + (rec.nama || ''), author: 'Biddokkes Polda NTB' });
-    pdf.addImage(canvas.toDataURL('image/jpeg', 0.9), 'JPEG', 0, 0, 210, 297);
-    return pdf;
-  } finally { host.innerHTML = ''; }
+const IMGC = {};
+function imgDataURL(src, maxH, maxW) {                    // gambar → dataURL + ukuran (mm) untuk jsPDF
+  const key = src + '|' + maxH + '|' + maxW;
+  if (!IMGC[key]) IMGC[key] = new Promise(res => {
+    if (!src) return res(null);
+    const im = new Image();
+    im.crossOrigin = 'anonymous';
+    im.onload = () => {
+      try {
+        const c = document.createElement('canvas');
+        c.width = im.naturalWidth; c.height = im.naturalHeight;
+        c.getContext('2d').drawImage(im, 0, 0);
+        let h = maxH, w = im.naturalWidth / im.naturalHeight * h;
+        if (maxW && w > maxW) { w = maxW; h = im.naturalHeight / im.naturalWidth * w; }
+        res({ data: c.toDataURL('image/png'), w: w, h: h });
+      } catch (_) { res(null); }
+    };
+    im.onerror = () => res(null);
+    im.src = src;
+  });
+  return IMGC[key];
 }
+async function makeLetterPdf(j, r) {
+  await loadScript(JSPDF_URL);
+  const s = ADM.settings, sg = signer(j, r, s);
+  const PX = 0.264583;
+  const imgs = {
+    sig: await imgDataURL(sg.img, 78 * PX, 220 * PX),
+    logo: j === 'SENPI' ? await imgDataURL('logo-polri.png', 68 * PX) : null
+  };
+  const make = () => new window.jspdf.jsPDF({ unit: 'mm', format: 'a4', compress: true });
+  let fz = 12;
+  for (let g = 0; g < 14; g++) {                           // perkecil huruf bila tidak muat 1 halaman
+    const h = layoutLetter(make(), j, r, s, sg, imgs, fz, false);
+    if (h <= 297 - 14 || fz <= 9) break;
+    fz -= 0.25;
+  }
+  const doc = make();
+  doc.setProperties({ title: (r.nomorSurat || '') + ' - ' + (r.nama || ''), author: 'Biddokkes Polda NTB', creator: 'Suket Biddokkes Polda NTB' });
+  layoutLetter(doc, j, r, s, sg, imgs, fz, true);
+  return doc;
+}
+/* Mesin tata letak sederhana: teks bergaya (garis bawah/coret/miring), tabel label : isi, rata kanan-kiri */
+function layoutLetter(doc, j, r, s, sg, imgs, fz, draw) {
+  const PT = 0.352778, PX = 0.264583, K = fz / 12;
+  const X0 = 22, W = 170;
+  let y = 14, pend = 0;
+  const px = n => n * PX * K;                              // jarak vertikal ikut mengecil bersama huruf
+  const hpx = n => n * PX;                                 // jarak horizontal tetap
+  const space = mm => { pend = Math.max(pend, mm); };
+  const flush = () => { y += pend; pend = 0; };
+  doc.setLineWidth(0.25);
+  // lebar teks TANPA kerning — sama dengan cara PDF menggambarnya (getTextWidth bawaan memakai kerning)
+  const tw = t => doc.getStringUnitWidth(String(t), { doKerning: false }) * doc.internal.getFontSize() / doc.internal.scaleFactor;
+  const font = (size, it) => { doc.setFont('helvetica', it ? 'italic' : 'normal'); doc.setFontSize(size); };
+  const R = (t, o) => Object.assign({ t: String(t == null ? '' : t) }, o || {});
+  const BR = { br: true };
+  // runs → baris (kata bergaya)
+  function lines(runs, width, size) {
+    const out = [];
+    let cur = [], curW = 0;
+    font(size); const sp = tw(' ');
+    const push = brk => { out.push({ words: cur, w: curW, brk: !!brk }); cur = []; curW = 0; };
+    runs.forEach((run, ri) => {
+      if (run.br) { push(true); return; }
+      if (run.gap) { if (cur.length) { cur.push({ t: '', run: run, ri: ri, w: run.gap, glue: true }); curW += run.gap; } return; }
+      run.t.split(/[ \t\r\n]+/).filter(Boolean).forEach((word, wi) => {
+        const glue = run.glue && wi === 0 && cur.length && !/^\s/.test(run.t);
+        font(size, run.i);
+        let ww = tw(word);
+        while (ww > width && word.length > 1) {              // kata sangat panjang dipotong
+          let n = word.length - 1;
+          while (n > 1 && tw(word.slice(0, n)) > width) n--;
+          if (cur.length) push();
+          cur.push({ t: word.slice(0, n), run: run, ri: ri, w: tw(word.slice(0, n)) }); curW = cur[0].w; push();
+          word = word.slice(n); ww = tw(word);
+        }
+        const add = (cur.length && !glue ? sp : 0) + ww;
+        if (cur.length && !glue && curW + add > width + 0.01) push();
+        curW += (cur.length && !glue ? sp : 0) + ww;
+        cur.push({ t: word, run: run, ri: ri, w: ww, glue: !!(glue && cur.length) });
+      });
+    });
+    if (cur.length || !out.length) push();
+    return out;
+  }
+  // gambar teks bergaya mulai (x, top); kembalikan tinggi
+  function text(runs, x, width, size, o) {
+    o = o || {};
+    if (!Array.isArray(runs)) runs = [R(runs)];
+    const lh = size * PT * (o.lh || 1.45);
+    const ls = lines(runs, width, size);
+    if (draw) {
+      font(size); const sp = tw(' ');
+      ls.forEach((ln, li) => {
+        const base = o.top + li * lh + (lh - 1.117 * size * PT) / 2 + 0.905 * size * PT;
+        const last = li === ls.length - 1 || ln.brk;
+        let gap = sp, cx = x;
+        const nGap = ln.words.filter((w, i) => i > 0 && !w.glue).length;
+        if (o.align === 'justify' && !last && nGap > 0) gap = sp + (width - ln.w) / nGap;
+        else if (o.align === 'center') cx = x + (width - ln.w) / 2;
+        else if (o.align === 'right') cx = x + width - ln.w;
+        ln.words.forEach((wd, wi) => {
+          font(size, wd.run.i);
+          if (wd.t) doc.text(wd.t, cx, base);
+          const nxt = ln.words[wi + 1];
+          const g = (nxt && !nxt.glue) || wd.run.gap ? (wd.run.gap ? 0 : gap) : 0;
+          const span = wd.w + (nxt && nxt.ri === wd.ri ? g : 0);
+          if (wd.run.u) doc.line(cx, base + 0.55, cx + span, base + 0.55);
+          if (wd.run.s) doc.line(cx, base - size * PT * 0.3, cx + span, base - size * PT * 0.3);
+          cx += wd.w + g;
+        });
+      });
+    }
+    return ls.length * lh;
+  }
+  const para = (runs, o) => {                              // paragraf blok penuh
+    o = o || {};
+    space(px(o.mt == null ? 10 : o.mt)); flush();
+    const x = X0 + hpx(o.indent || 0);
+    y += text(runs, x, W - hpx(o.indent || 0), o.size || fz, { top: y, align: o.align || 'left', lh: o.lh });
+    space(px(o.mb == null ? 10 : o.mb));
+  };
+  // tabel label : isi  (cols dalam px: [num?, label]); value bisa runs dengan BR
+  const kv = (rows, labelPx, o) => {
+    o = o || {};
+    flush();
+    const size = o.size || fz, padv = px(o.pad == null ? 4 : o.pad);
+    const x = X0 + hpx(o.indent || 0), numW = o.num ? hpx(28) : 0, labW = hpx(labelPx), colW = hpx(16);
+    const valX = x + numW + labW + colW, valW = (o.width ? hpx(o.width) + x : X0 + W) - valX;
+    rows.forEach(rw => {
+      let k = 0;
+      const top = y + padv;
+      const num = o.num ? rw[k++] : null, lab = rw[k++], val = rw[k];
+      const hs = [];
+      if (o.num) hs.push(text(num, x, numW, size, { top: top }));
+      hs.push(text(lab, x + numW, labW - 1, size, { top: top }));
+      hs.push(text(':', x + numW + labW, colW, size, { top: top }));
+      hs.push(text(Array.isArray(val) ? val : [R(val)], valX, valW, size, { top: top, align: o.align }));
+      y = top + Math.max.apply(null, hs) + padv;
+    });
+    space(px(o.mb || 0));
+  };
+  const kop = () => {
+    const size = fz * 0.92, lh = size * PT * 1.3;
+    const L = ['KEPOLISIAN NEGARA REPUBLIK INDONESIA', 'DAERAH NUSA TENGGARA BARAT', 'BIDANG KEDOKTERAN DAN KESEHATAN'];
+    font(size);
+    const bw = Math.max.apply(null, L.map(t => tw(t))) + hpx(16);
+    L.forEach((t, i) => text(t, X0, bw, size, { top: y + i * lh, align: 'center', lh: 1.3 }));
+    y += L.length * lh + px(1);
+    if (draw) doc.line(X0, y, X0 + bw, y);
+  };
+  const judul = (t, mt) => {
+    space(px(mt == null ? 26 : mt)); flush();
+    const size = fz, lh = size * PT * 1.3;
+    text([R(t, { u: 1 })], X0, W, size, { top: y, align: 'center', lh: 1.3 });
+    text('Nomor: ' + (r.nomorSurat || ''), X0, W, size, { top: y + lh, align: 'center', lh: 1.3 });
+    y += 2 * lh; space(px(16));
+  };
+  const msTms = (h, sep) => sep === '/'
+    ? (h === 'TMS' ? [R('Memenuhi Syarat', { s: 1 }), R('/Tidak Memenuhi Syarat', { glue: 1 })] : [R('Memenuhi Syarat/'), R('Tidak Memenuhi Syarat', { s: 1, glue: 1 })])
+    : (h === 'TMS' ? [R('Memenuhi Syarat', { s: 1 }), R('/ Tidak Memenuhi Syarat')] : [R('Memenuhi Syarat /'), R('Tidak Memenuhi Syarat', { s: 1 })]);
+  const ttdBlock = (topLines, an, widthPx, mtPx, leftAlignTop) => {
+    space(px(mtPx)); flush();
+    const size = fz, lh = size * PT * 1.3, bw = hpx(widthPx), bx = X0 + W - bw;
+    const y0 = y;
+    topLines.forEach(t => { y += text(t, bx, bw, size, { top: y, align: leftAlignTop ? 'left' : 'center', lh: 1.3 }); });
+    y += text(an, bx, bw, size, { top: y, align: 'center', lh: 1.3 });
+    y += text(sg.jabatan, bx, bw, size, { top: y, align: 'center', lh: 1.3 });
+    const sh = px(78);
+    if (draw && imgs.sig) {
+      const h = Math.min(imgs.sig.h * K, sh), w = imgs.sig.w * (h / imgs.sig.h);
+      doc.addImage(imgs.sig.data, 'PNG', bx + (bw - w) / 2, y + (sh - h) / 2, w, h);
+    }
+    y += sh;
+    y += text([R(sg.nama, { u: 1 })], bx, bw, size, { top: y, align: 'center', lh: 1.3 });
+    y += text(sg.pangkat, bx, bw, size, { top: y, align: 'center', lh: 1.3 });
+    return { top: y0, bottom: y };
+  };
+  const SPC = { gap: 14 };                                // jarak 12 spasi seperti template asli
+  kop();
+  if (j === 'SKS') {
+    judul('SURAT REKOMENDASI KESEHATAN');
+    para('Yang bertanda tangan dibawah ini Dokter yang memeriksa, dengan mengingat sumpah pada waktu menerima jabatan menyatakan :', { align: 'justify' });
+    flush();
+    kv([['Nama', r.nama], ['Pangkat', r.pangkat], ['Nrp/Nip', r.nrp], ['Jabatan', r.jabatan], ['Kesatuan', r.kesatuan]], 130, { pad: 7 });
+    para('Telah diperiksa kesehatannya di Biddokkes Polda NTB dan berpendapat bahwa dari segi kesehatan yang bersangkutan Memenuhi Syarat untuk mengikuti:', { align: 'justify' });
+    // garis putus-putus — keperluan — garis putus-putus
+    space(px(14)); flush();
+    {
+      const size = fz, lh = size * PT * 1.45;
+      font(size);
+      const maxW = W * 0.8, kw = Math.min(tw(r.keperluan || ''), maxW);
+      const ls = lines([R(r.keperluan)], maxW, size), h = ls.length * lh;
+      const tx = X0 + (W - kw) / 2;
+      text([R(r.keperluan)], tx, kw + 0.5, size, { top: y, align: 'center' });
+      if (draw) {
+        const my = y + h / 2 + 0.6;
+        doc.setLineDashPattern([1.1, 0.8], 0); doc.setLineWidth(0.35);
+        doc.line(X0, my, tx - hpx(6), my); doc.line(tx + kw + hpx(6), my, X0 + W, my);
+        doc.setLineDashPattern([], 0); doc.setLineWidth(0.25);
+      }
+      y += h; space(px(14));
+    }
+    para('Demikian surat keterangan ini dibuat di Biddokkes Polda NTB tanggal ' + tglIndo(r.tglPeriksa) + ' untuk dapat dipergunakan sebagaimana mestinya.', { align: 'justify' });
+    ttdBlock([[R('Mataram,'), SPC, R(bulanTahun(r.tglPeriksa), { glue: 1 })]], 'a.n KABIDDOKKES POLDA NTB', 300, 26);
+    // catatan
+    space(px(30)); flush();
+    const cs = fz * 0.92;
+    y += text([R('Catatan', { u: 1 }), R(' :')], X0, W, cs, { top: y });
+    kv([['Tinggi Badan', (r.tinggi || '') + ' Cm'], ['Berat Badan', (r.berat || '') + ' Kg'], ['Gol. Darah', '- ' + (r.golDarah || '') + ' -']], 110, { pad: 1, size: cs });
+    space(px(12)); flush();
+    {
+      const cw = hpx(115), lh = cs * PT * 1.45, ph = px(2) + lh + px(2);
+      const cells = [['Kualitatif', 'Kuantitatif'], [r.kualitatif || '', r.kuantitatif || '']];
+      cells.forEach((row, ri) => row.forEach((c, ci) => {
+        const cx = X0 + ci * cw, cy = y + ri * ph;
+        if (draw) doc.rect(cx, cy, cw, ph);
+        text(c, cx + hpx(6), cw - hpx(12), cs, { top: cy + px(2), align: 'center' });
+      }));
+      y += 2 * ph;
+    }
+  } else if (j === 'NIKAH') {
+    judul('SURAT KETERANGAN DOKTER');
+    para('Yang bertanda tangan di bawah ini Dokter yang memeriksa, dengan mengingat sumpah pada waktu menerima jabatan, bahwa:', { align: 'justify' });
+    flush();
+    kv([['1.', 'N a m a', r.nama], ['2.', 'Pangkat Nrp/Nip', (r.pangkat || '') + '/' + (r.nrp || '')], ['3.', 'J a b a t a n', r.jabatan], ['4.', 'Kesatuan', r.kesatuan]], 180, { indent: 22, num: true });
+    para([R('Berikut dengan calon istrinya  :', { i: 1 })], { indent: 22, mt: 12, mb: 6 });
+    flush();
+    kv([['1.', 'N a m a', r.pNama], ['2.', 'TTL', ttlCalon(r)], ['3.', 'Suku / Bangsa', (r.pSuku || '') + ' / ' + (r.pBangsa || '')], ['4.', 'P e k e r j a a n', r.pPekerjaan], ['5.', 'A g a m a', r.pAgama], ['6.', 'Alamat', r.pAlamat]], 180, { indent: 22, num: true });
+    para('Di periksa kesehatan badannya dengan teliti :', { indent: 6, mb: 4 });
+    flush();
+    kv([['Di', 'Biddokkes Polda NTB'], ['Pada tanggal', tglIndo(r.tglPeriksa)]], 130, { indent: 40 });
+    para('Atas permintaan dari ' + (r.permintaanDari || '') + ' Nomor: ' + (r.noSuratRek || '') + ' tanggal ' + tglIndo(r.tglSuratRek) + ' berpendapat bahwa:', { align: 'justify' });
+    flush();
+    kv([['Orang tersebut di atas', msTms(r.hasil, ' / ').concat([BR, R('untuk melangsungkan perkawinannya.')])]], 228);
+    para('Demikian untuk maklum dan dipergunakan sebagaimana mestinya.');
+    ttdBlock([[R('Mataram,'), SPC, R(bulanTahun(r.tglPeriksa), { glue: 1 })]], 'a.n KABIDDOKKES POLDA NTB', 300, 26);
+  } else {
+    if (imgs.logo) {
+      space(px(10)); flush();
+      const h = imgs.logo.h * K, w = imgs.logo.w * K;
+      if (draw) doc.addImage(imgs.logo.data, 'PNG', X0 + (W - w) / 2, y, w, h);
+      y += h;
+    }
+    judul('SURAT KETERANGAN HASIL PEMERIKSAAN KESEHATAN', 8);
+    const size = fz, L1 = hpx(44), N1 = hpx(30), L2 = L1 + hpx(28), N2 = L1 + hpx(20);
+    const item = (num, runs, numX, x, mb) => {
+      flush();
+      text(num, X0 + numX - 8, 8, size, { top: y, align: 'right', lh: 1.55 });
+      y += text(runs, X0 + x, W - x, size, { top: y, align: 'justify', lh: 1.55 });
+      space(px(mb));
+    };
+    space(px(14));
+    item('1.', 'Rujukan:', N1, L1, 0);
+    item('a.', s.SENPI_RUJUKAN_A || '', N2, L2, 0);
+    item('b.', 'Nota Dinas Karolog Polda NTB Nomor: ' + (r.noNotaDinas || '') + ' tentang permintaan diterbitkan surat keterangan kesehatan untuk izin pinjam pakai dan membawa senjata api organik Polri.', N2, L2, 9);
+    item('2.', 'Dengan ini menerangkan bahwa hasil pemeriksaan terhadap:', N1, L1, 2);
+    flush();
+    kv([['a.', 'Nama', r.nama], ['b.', 'Tempat dan tanggal lahir', ttlSenpi(r)], ['c.', 'Jenis kelamin', r.jk], ['d.', 'Agama', r.agama], ['e.', 'Pangkat/NRP', (r.pangkat || '') + '/' + (r.nrp || '')], ['f.', 'Jabatan', r.jabatan], ['g.', 'Kesatuan', r.kesatuan], ['h.', 'Alamat kantor', r.alamatKantor]], 190, { indent: 44 + 2, num: true, pad: 1, mb: 8 });
+    flush();
+    y += text([R('yang bersangkutan dinyatakan:'), BR].concat(msTms(r.hasil, '/'), [R(' untuk mendapatkan surat izin Pinjam Pakai Senjata Api/Surat Izin Pinjam Pakai dan Membawa Senjata Api')]), X0 + L2, W - L2, size, { top: y, align: 'justify', lh: 1.55 });
+    space(px(9));
+    item('3.', 'Hasil pemeriksaan kesehatan ini berlaku selama 1 (satu) tahun sejak dikeluarkan, apabila di kemudian hari ternyata terdapat kekeliruan, surat keterangan hasil penelitian ini akan dicabut.', N1, L1, 9);
+    const box = ttdBlock(['Dikeluarkan di: Mataram', [R('pada tanggal :', { u: 1 }), Object.assign({ u: 1 }, SPC), R(bulanTahun(r.tglPeriksa), { u: 1, glue: 1 })]], 'a.n. KABIDDOKKES POLDA NTB', 320, 16, true);
+    // tembusan rata bawah di sebelah kiri
+    const cs = fz * 0.92, lh = cs * PT * 1.45;
+    const temb = String(s.SENPI_TEMBUSAN || '').split(/\r?\n|\|/).map(x => x.trim()).filter(Boolean);
+    const leftW = W - hpx(320) - hpx(20);
+    const hT = lh * (1 + temb.length);
+    let ty = box.bottom - hT - px(4);
+    text('Tembusan :', X0, leftW, cs, { top: ty }); ty += lh;
+    temb.forEach((t, i) => { text(String(i + 1) + '.', X0, hpx(18), cs, { top: ty }); ty += text(t, X0 + hpx(20), leftW - hpx(20), cs, { top: ty }); });
+  }
+  return y;
+}
+
 let ARCH = Promise.resolve();
 function archiveRecs(j, recs, opt) {
   opt = opt || {};
@@ -2149,16 +2528,17 @@ async function letterDocx(j, r, s) {
     P('Nomor: ' + (r.nomorSurat || ''), Object.assign({ alignment: AL.CENTER }, SP(0, px(16))))
   ];
   const J = (t, o) => P(typeof t === 'string' ? R(t) : t, Object.assign({ alignment: AL.JUSTIFIED }, SP(px(10), px(10)), o || {}));
-  const sig = await imgData(s['TTD_' + j + '_GAMBAR'] || TTD_IMG, 78, 220);
+  const sgn = signer(j, r, s);
+  const sig = await imgData(sgn.img, 78, 220);
   const ttd = (top, an, wCol, leftCell) => {
     const w2 = wCol || px(300);
     const right = [].concat(top, [
       P(an, { alignment: AL.CENTER }),
-      P(s['TTD_' + j + '_JABATAN'] || '', { alignment: AL.CENTER }),
+      P(sgn.jabatan, { alignment: AL.CENTER }),
       sig ? P(new X.ImageRun({ data: sig.data, transformation: { width: sig.w, height: sig.h } }), { alignment: AL.CENTER, spacing: { before: 60, after: 60, line: 240, lineRule: X.LineRuleType.AUTO } })
         : P('', { spacing: { before: 0, after: 0, line: px(78), lineRule: X.LineRuleType.EXACT } }),
-      P(R(s['TTD_' + j + '_NAMA'] || '', { underline: {} }), { alignment: AL.CENTER }),
-      P(s['TTD_' + j + '_PANGKAT'] || '', { alignment: AL.CENTER })
+      P(R(sgn.nama, { underline: {} }), { alignment: AL.CENTER }),
+      P(sgn.pangkat, { alignment: AL.CENTER })
     ]);
     return table([[
       cell(leftCell || [P('')], W - w2, { verticalAlign: X.VerticalAlign.BOTTOM }),
@@ -2261,6 +2641,12 @@ const ACTIONS = {
   menu: () => drawer(true),
   unmenu: () => drawer(false),
   qr: openQR,
+  rekap: openRekap,
+  rekapGo: () => rekapGo(),
+  pinOk: () => submitPin(),
+  pinOpen: () => askPin(),
+  pinCancel: () => { PIN.asking = false; closeModal('mPin'); location.hash = '#/'; },
+  lockPin: lockPin,
   closeDetail: () => closeDetail(),
   startEdit: startEdit,
   cancelEdit: () => cancelEdit(),
@@ -2324,6 +2710,7 @@ document.addEventListener('change', ev => {
 });
 $('#q').addEventListener('input', debounce(() => { ADM.q = $('#q').value; ADM.limit = PAGE; renderList(); }, 120));
 $('#fBody').addEventListener('submit', ev => { ev.preventDefault(); review(); });
+$('#pinForm').addEventListener('submit', ev => { ev.preventDefault(); submitPin(); });
 document.addEventListener('paste', ev => {
   const t = ev.target;
   if (!(t.classList && t.classList.contains('ed'))) return;
@@ -2373,6 +2760,7 @@ window.addEventListener('hashchange', route);
 
 /* ─────────────────────────────── Mulai ────────────────────────────── */
 buildMenu();
+if (PIN.v) $('#lockLink').hidden = false;
 const savedDays = store.get('suket_days');
 ADM.days = savedDays !== null && [0, 30, 90, 365].indexOf(Number(savedDays)) >= 0 ? Number(savedDays) : 30;
 ADM.sound = !!store.get('suket_sound');
