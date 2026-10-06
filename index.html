@@ -6,7 +6,7 @@
   1. Isi API_URL (cari "KONFIGURASI" di bagian <script> bawah) dengan URL Web App /exec dari Apps Script.
   2. Upload file ini sebagai index.html ke GitHub Pages (logo Dokkes sudah tertanam di file ini; logo-polri.png opsional untuk Suket Senpi)
      (logo opsional; tanpa logo tampil ikon cadangan).
-  3. Halaman Data surat: tombol "Data surat" di kanan atas, atau tambahkan #/data di akhir alamat.
+  3. Halaman Data surat (tersembunyi): klik kata "petugas" di kalimat halaman depan, atau tambahkan #/data di akhir alamat.
      Tanpa password. Surat langsung terbit saat formulir dikirim, PDF tersimpan otomatis ke Google Drive.
 -->
 <meta charset="UTF-8">
@@ -200,6 +200,8 @@ input[type=date].inp::-webkit-date-and-time-value{text-align:left}
    ══════════════════════════════════════════════════════════════════ */
 .shell{max-width:1120px;margin:0 auto;padding:20px 16px 36px}
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+a.secret{color:inherit;text-decoration:none;cursor:text;-webkit-tap-highlight-color:transparent}
+a.secret:focus-visible{outline:none}
 .topnav{display:inline-flex;padding:3px;border:1px solid var(--line);border-radius:999px;background:rgba(11,28,42,.85)}
 .topnav a{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:0 14px;border-radius:999px;font:600 14px var(--f-ui);color:var(--text-2);text-decoration:none;transition:background .15s,color .15s}
 .topnav a:hover{color:var(--text)}
@@ -508,6 +510,14 @@ input[type=date].inp::-webkit-date-and-time-value{text-align:left}
 .d-pdf .btn-link{color:var(--accent-hi);min-height:32px}
 .d-pdf .btn-link .i{width:17px;height:17px}
 .d-note{font-size:12.5px;color:var(--text-3)}
+.v-edit{display:none}
+#mDetail[data-edit="1"] .v-edit{display:inline-flex}
+#mDetail[data-edit="1"] .v-view{display:none}
+.kertas .ed{outline:none;background:rgba(255,214,0,.16);box-shadow:inset 0 -1.5px 0 #E0A800;border-radius:2px;padding:0 1px;cursor:text;min-width:1.2em;display:inline-block}
+.kertas .ed:hover{background:rgba(255,214,0,.28)}
+.kertas .ed:focus{background:rgba(61,219,195,.18);box-shadow:inset 0 -2px 0 #0E9C86}
+.kertas .ed-h{cursor:pointer;box-shadow:inset 0 -1.5px 0 #E0A800;background:rgba(255,214,0,.12)}
+.kertas .ed-h:hover{background:rgba(255,214,0,.28)}
 .ws-form .rv-sect h3{margin-top:18px}
 .ws-foot{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:12px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
 .ws-foot .sp{flex:1}
@@ -656,6 +666,7 @@ ol.alpha li{padding-left:4px}
     <symbol id="i-form" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></symbol>
     <symbol id="i-word" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/><path d="m8.5 12 1.2 5 1.6-3.6 1.6 3.6 1.2-5"/></symbol>
     <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
     <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
     <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
   </defs>
@@ -672,16 +683,12 @@ ol.alpha li{padding-left:4px}
         <span class="logo"><img src="data:image/png;base64,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" alt="Logo Kedokteran dan Kesehatan"><svg class="i"><use href="#i-cross"/></svg></span>
         <span class="brand-t"><b>Biddokkes Polda NTB</b><small>Bidang Kedokteran dan Kesehatan</small></span>
       </div>
-      <nav class="topnav" aria-label="Halaman">
-        <a href="#/" class="on" aria-current="page"><svg class="i"><use href="#i-form"/></svg>Buat surat</a>
-        <a href="#/data"><svg class="i"><use href="#i-list"/></svg>Data surat</a>
-      </nav>
     </header>
     <div class="menu-grid">
       <section class="hero" aria-labelledby="hTitle">
         <h1 class="h-title" id="hTitle">Layanan Surat<br>Keterangan Sehat</h1>
         <svg class="ecg" viewBox="0 0 600 66" aria-hidden="true"><path class="base" d="M0 40 L18 40 Q24 31 30 40 L36 40 L40 46 L46 6 L52 60 L57 40 L68 40 Q80 26 92 40 L150 40 L168 40 Q174 31 180 40 L186 40 L190 46 L196 6 L202 60 L207 40 L218 40 Q230 26 242 40 L300 40 L318 40 Q324 31 330 40 L336 40 L340 46 L346 6 L352 60 L357 40 L368 40 Q380 26 392 40 L450 40 L468 40 Q474 31 480 40 L486 40 L490 46 L496 6 L502 60 L507 40 L518 40 Q530 26 542 40 L600 40"/><path class="sweep" pathLength="1000" d="M0 40 L18 40 Q24 31 30 40 L36 40 L40 46 L46 6 L52 60 L57 40 L68 40 Q80 26 92 40 L150 40 L168 40 Q174 31 180 40 L186 40 L190 46 L196 6 L202 60 L207 40 L218 40 Q230 26 242 40 L300 40 L318 40 Q324 31 330 40 L336 40 L340 46 L346 6 L352 60 L357 40 L368 40 Q380 26 392 40 L450 40 L468 40 Q474 31 480 40 L486 40 L490 46 L496 6 L502 60 L507 40 L518 40 Q530 26 542 40 L600 40"/></svg>
-        <p class="h-lead">Pilih surat yang Anda perlukan, isi formulirnya, lalu konfirmasikan kepada petugas.</p>
+        <p class="h-lead">Pilih surat yang Anda perlukan, isi formulirnya, lalu konfirmasikan kepada <a href="#/data" class="secret">petugas</a>.</p>
         <ol class="steps"><li><b>1</b>Pilih surat</li><li><b>2</b>Isi formulir</li><li><b>3</b>Konfirmasi ke petugas</li></ol>
       </section>
       <div class="menu-side">
@@ -786,11 +793,14 @@ ol.alpha li{padding-left:4px}
       <div class="ws-prev"><div class="prev-h"><span><svg class="i"><use href="#i-doc"/></svg>Pratinjau surat A4</span><span id="prevNote">Sama dengan hasil unduhan PDF</span></div><div class="pwrap" id="pWrap"></div></div>
     </div>
     <footer class="ws-foot">
-      <button class="btn btn-danger" data-act="delCurrent"><svg class="i"><use href="#i-trash"/></svg>Hapus</button>
+      <button class="btn btn-danger v-view" data-act="delCurrent"><svg class="i"><use href="#i-trash"/></svg>Hapus</button>
       <span class="sp"></span>
-      <button class="btn" data-act="print"><svg class="i"><use href="#i-print"/></svg>Cetak</button>
-      <button class="btn" data-act="word"><svg class="i"><use href="#i-word"/></svg>Unduh Word</button>
-      <button class="btn btn-pri" data-act="pdf"><svg class="i"><use href="#i-download"/></svg>Unduh PDF</button>
+      <button class="btn v-edit" data-act="cancelEdit">Batal</button>
+      <button class="btn btn-pri v-edit" data-act="saveEdit" id="bSaveEdit"><svg class="i"><use href="#i-save"/></svg>Simpan perubahan</button>
+      <button class="btn v-view" data-act="startEdit"><svg class="i"><use href="#i-edit"/></svg>Edit surat</button>
+      <button class="btn v-view" data-act="print"><svg class="i"><use href="#i-print"/></svg>Cetak</button>
+      <button class="btn v-view" data-act="word"><svg class="i"><use href="#i-word"/></svg>Unduh Word</button>
+      <button class="btn btn-pri v-view" data-act="pdf"><svg class="i"><use href="#i-download"/></svg>Unduh PDF</button>
     </footer>
   </div>
 </div>
@@ -1618,7 +1628,7 @@ async function delRecs(ids, j) {
     const res = await api('remove', { jenis: j, ids: ids, rev: ADM.rev }, { retries: 1 });
     ADM.data[j] = ADM.data[j].filter(r => ids.indexOf(r.id) < 0);
     ids.forEach(id => ADM.sel.delete(id));
-    if (D.id && ids.indexOf(D.id) >= 0) { D.id = null; closeModal('mDetail'); }
+    if (D.id && ids.indexOf(D.id) >= 0) { D.edit = null; D.id = null; closeModal('mDetail'); }
     mutated(res);
     toast(ids.length === 1 ? 'Surat dihapus.' : ids.length + ' surat dihapus.', 'ok');
   } catch (e) { fail(e); }
@@ -1626,10 +1636,10 @@ async function delRecs(ids, j) {
 }
 
 /* Pratinjau surat */
-const D = { j: null, id: null, sig: '' };
+const D = { j: null, id: null, sig: '', edit: null };
 const curRec = () => D.id ? findRec(D.j, D.id) : null;
 function openDetail(j, id) {
-  D.j = j; D.id = id;
+  D.j = j; D.id = id; D.edit = null;
   if (!curRec()) return;
   buildDetail();
   setPane('prev');
@@ -1641,6 +1651,8 @@ function buildDetail() {
   const r = curRec();
   if (!r) return;
   FJ = D.j;
+  $('#mDetail').dataset.edit = D.edit ? '1' : '';
+  if (D.edit) { buildEditPanel(r); return; }
   $('#dTitle').textContent = r.nama || '(tanpa nama)';
   $('#dSub').textContent = FORMS[D.j].title + (r.nomorSurat ? ', ' + r.nomorSurat : '');
   $('#dStatus').innerHTML = drivePill(r);
@@ -1659,6 +1671,64 @@ function buildDetail() {
   $('#pWrap').innerHTML = RENDER[D.j](r, ADM.settings);
   fitPreview();
 }
+function editRec() { const r = curRec(); return r ? Object.assign({}, r, D.edit ? D.edit.draft : {}) : null; }
+function renderEditPreview() {
+  const x = editRec();
+  if (!x) return;
+  EDITING = true;
+  try { $('#pWrap').innerHTML = RENDER[D.j](x, ADM.settings); } finally { EDITING = false; }
+  fitPreview();
+}
+function buildEditPanel(r) {
+  const x = editRec();
+  const keys = ['nomorSurat', 'tglPeriksa'].concat(D.j === 'SKS' ? ['kualitatif', 'kuantitatif'] : ['hasil']);
+  $('#dStatus').innerHTML = '<span class="pill p-info"><svg class="i" aria-hidden="true"><use href="#i-edit"/></svg>Mode edit</span>';
+  $('#dForm').innerHTML = `<section class="adm-box"><header class="sect-h"><h3>Edit surat</h3></header>
+    <p class="adm-note"><svg class="i" aria-hidden="true"><use href="#i-info"/></svg><span>Klik teks yang <b>bergaris kuning</b> di surat lalu ketik langsung untuk mengubahnya. ${D.j === 'SKS' ? '' : 'Klik tulisan <b>Memenuhi Syarat</b> untuk menggantinya. '}Tekan <b>Simpan perubahan</b> bila sudah selesai.</span></p>
+    ${keys.map(k => fieldHTML(k, x[k], 'e', true)).join('')}</section>
+    <p class="d-meta">Setelah disimpan, Spreadsheet ikut diperbarui dan PDF di Google Drive diganti dengan versi baru. Unduhan PDF dan Word juga memakai isi yang baru.</p>`;
+  renderEditPreview();
+}
+function startEdit() {
+  const r = curRec();
+  if (!r) return;
+  D.edit = { draft: {} };
+  buildDetail();
+  setPane('prev');
+  setTimeout(() => { const f = $('#pWrap .ed'); if (f) { try { f.focus({ preventScroll: true }); } catch (_) {} } }, 80);
+}
+async function cancelEdit(force) {
+  if (!force && D.edit && Object.keys(D.edit.draft).length) {
+    const ok = await ask({ title: 'Batalkan perubahan?', msg: 'Perubahan yang belum disimpan akan hilang.', ok: 'Batalkan perubahan', danger: true, icon: 'i-alert' });
+    if (!ok) return false;
+  }
+  D.edit = null;
+  buildDetail();
+  return true;
+}
+async function saveEdit() {
+  const r = curRec();
+  if (!r || !D.edit) return;
+  const draft = {};
+  Object.keys(D.edit.draft).forEach(k => { const v = String(D.edit.draft[k] == null ? '' : D.edit.draft[k]).replace(/\s+/g, ' ').trim(); if (v !== String(r[k] || '')) draft[k] = v; });
+  if (!Object.keys(draft).length) { D.edit = null; buildDetail(); toast('Tidak ada perubahan.', 'info', 2500); return; }
+  for (const k of Object.keys(draft)) {
+    if (!draft[k] && !fd(k).optional) { toast(fd(k).label + ' tidak boleh kosong.', 'err'); return; }
+  }
+  const btn = $('#bSaveEdit');
+  busy(btn, true, 'Menyimpan');
+  ADM.busy++;
+  try {
+    const res = await api('save', { jenis: D.j, id: r.id, data: draft, rev: ADM.rev }, { retries: 1 });
+    upsertLocal(D.j, res.record);
+    D.edit = null;
+    mutated(res);
+    buildDetail();
+    toast('Perubahan disimpan. PDF di Drive sedang diperbarui.', 'ok');
+    archiveRecs(D.j, [res.record], { silent: true });
+  } catch (e) { fail(e); }
+  finally { ADM.busy--; busy(btn, false); }
+}
 function fitPreview() {
   const w = $('#pWrap'), k = w && w.querySelector('.kertas');
   if (!k || !w.clientWidth) return;
@@ -1671,11 +1741,16 @@ function setPane(p) {
   $$('#mDetail .ws-seg button').forEach(b => { const on = b.dataset.pane === p; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
   if (p === 'prev') requestAnimationFrame(fitPreview);
 }
-function closeDetail() { D.id = null; closeModal('mDetail'); }
+const editPreviewSoon = debounce(() => { if (D.edit) renderEditPreview(); }, 250);
+async function closeDetail() {
+  if (D.edit && !(await cancelEdit())) return;
+  D.edit = null; D.id = null; closeModal('mDetail');
+}
 function syncDetail() {
   if (!isOpen('mDetail') || !D.id) return;
   const r = curRec();
-  if (!r) { D.id = null; closeModal('mDetail'); toast('Surat yang sedang dibuka sudah dihapus.', 'warn'); return; }
+  if (!r) { D.edit = null; D.id = null; closeModal('mDetail'); toast('Surat yang sedang dibuka sudah dihapus.', 'warn'); return; }
+  if (D.edit) return;
   if (JSON.stringify(r) !== D.sig) buildDetail();
 }
 
@@ -1762,7 +1837,11 @@ const kv = (rows, w) => `<table class="kv"><colgroup><col style="width:${w}"><co
 const nkv = (rows, w) => `<table class="kv"><colgroup><col style="width:28px"><col style="width:${w}"><col style="width:16px"><col></colgroup>${rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>:</td><td>${r[2]}</td></tr>`).join('')}</table>`;
 const msTms = (h, sep) => h === 'TMS' ? `<s>Memenuhi Syarat</s>${sep}Tidak Memenuhi Syarat` : `Memenuhi Syarat${sep}<s>Tidak Memenuhi Syarat</s>`;
 const SP = '&nbsp;'.repeat(12);
-const nomorHTML = (r, opt) => r.nomorSurat ? esc(r.nomorSurat) : `<span class="belum">${esc((opt && opt.predicted) || '…')}</span>`;
+/* Mode edit surat: nilai isian di pratinjau bisa diketik langsung */
+let EDITING = false;
+const V = (r, k, val) => { const t = val === undefined ? r[k] : val; return EDITING ? `<span class="ed" contenteditable="true" spellcheck="false" data-ek="${k}">${esc(t)}</span>` : esc(t); };
+const hasilHTML = (r, sep) => EDITING ? `<span class="ed-h" data-act="toggleHasil" title="Klik untuk mengganti Memenuhi / Tidak Memenuhi Syarat">${msTms(r.hasil, sep)}</span>` : msTms(r.hasil, sep);
+const nomorHTML = (r, opt) => EDITING ? V(r, 'nomorSurat') : r.nomorSurat ? esc(r.nomorSurat) : `<span class="belum">${esc((opt && opt.predicted) || '…')}</span>`;
 function ttd(j, s, top, an) {
   const g = s['TTD_' + j + '_GAMBAR'] || TTD_IMG;
   return `<div class="ttd">${top}<div>${an}</div><div>${esc(s['TTD_' + j + '_JABATAN'])}</div>
@@ -1773,14 +1852,14 @@ function suratSKS(r, s, opt) {
   return `<div class="kertas sks">${kop()}
   <div class="k-judul"><div class="u">SURAT REKOMENDASI KESEHATAN</div><div>Nomor: ${nomorHTML(r, opt)}</div></div>
   <p class="j">Yang bertanda tangan dibawah ini Dokter yang memeriksa, dengan mengingat sumpah pada waktu menerima jabatan menyatakan :</p>
-  ${kv([['Nama', esc(r.nama)], ['Pangkat', esc(r.pangkat)], ['Nrp/Nip', esc(r.nrp)], ['Jabatan', esc(r.jabatan)], ['Kesatuan', esc(r.kesatuan)]], '130px')}
+  ${kv([['Nama', V(r, 'nama')], ['Pangkat', V(r, 'pangkat')], ['Nrp/Nip', V(r, 'nrp')], ['Jabatan', V(r, 'jabatan')], ['Kesatuan', V(r, 'kesatuan')]], '130px')}
   <p class="j">Telah diperiksa kesehatannya di Biddokkes Polda NTB dan berpendapat bahwa dari segi kesehatan yang bersangkutan Memenuhi Syarat untuk mengikuti:</p>
-  <div class="dash"><span></span><b>${esc(r.keperluan)}</b><span></span></div>
+  <div class="dash"><span></span><b>${V(r, 'keperluan')}</b><span></span></div>
   <p class="j">Demikian surat keterangan ini dibuat di Biddokkes Polda NTB tanggal ${esc(tglIndo(r.tglPeriksa))} untuk dapat dipergunakan sebagaimana mestinya.</p>
   ${ttd('SKS', s, `<div>Mataram,${SP}${bulanTahun(r.tglPeriksa)}</div>`, 'a.n KABIDDOKKES POLDA NTB')}
   <div class="catatan"><span class="u">Catatan</span> :
-    ${kv([['Tinggi Badan', esc(r.tinggi) + ' Cm'], ['Berat Badan', esc(r.berat) + ' Kg'], ['Gol. Darah', '- ' + esc(r.golDarah) + ' -']], '110px')}
-    <table class="kk"><tr><th>Kualitatif</th><th>Kuantitatif</th></tr><tr><td>${esc(r.kualitatif) || '&nbsp;'}</td><td>${esc(r.kuantitatif) || '&nbsp;'}</td></tr></table>
+    ${kv([['Tinggi Badan', V(r, 'tinggi') + ' Cm'], ['Berat Badan', V(r, 'berat') + ' Kg'], ['Gol. Darah', '- ' + V(r, 'golDarah') + ' -']], '110px')}
+    <table class="kk"><tr><th>Kualitatif</th><th>Kuantitatif</th></tr><tr><td>${V(r, 'kualitatif') || '&nbsp;'}</td><td>${V(r, 'kuantitatif') || '&nbsp;'}</td></tr></table>
   </div></div>`;
 }
 function suratNIKAH(r, s, opt) {
@@ -1788,14 +1867,14 @@ function suratNIKAH(r, s, opt) {
   <div class="k-judul"><div class="u">SURAT KETERANGAN DOKTER</div><div>Nomor: ${nomorHTML(r, opt)}</div></div>
   <p class="j">Yang bertanda tangan di bawah ini Dokter yang memeriksa, dengan mengingat sumpah pada waktu menerima jabatan, bahwa:</p>
   <div class="ind">
-    ${nkv([['1.', 'N a m a', esc(r.nama)], ['2.', 'Pangkat Nrp/Nip', `${esc(r.pangkat)}/${esc(r.nrp)}`], ['3.', 'J a b a t a n', esc(r.jabatan)], ['4.', 'Kesatuan', esc(r.kesatuan)]], '180px')}
+    ${nkv([['1.', 'N a m a', V(r, 'nama')], ['2.', 'Pangkat Nrp/Nip', `${V(r, 'pangkat')}/${V(r, 'nrp')}`], ['3.', 'J a b a t a n', V(r, 'jabatan')], ['4.', 'Kesatuan', V(r, 'kesatuan')]], '180px')}
     <p class="it" style="margin:12px 0 6px">Berikut dengan calon istrinya&nbsp; :</p>
-    ${nkv([['1.', 'N a m a', esc(r.pNama)], ['2.', 'TTL', esc(ttlCalon(r))], ['3.', 'Suku / Bangsa', `${esc(r.pSuku)} / ${esc(r.pBangsa)}`], ['4.', 'P e k e r j a a n', esc(r.pPekerjaan)], ['5.', 'A g a m a', esc(r.pAgama)], ['6.', 'Alamat', esc(r.pAlamat)]], '180px')}
+    ${nkv([['1.', 'N a m a', V(r, 'pNama')], ['2.', 'TTL', V(r, 'pTTL', ttlCalon(r))], ['3.', 'Suku / Bangsa', `${V(r, 'pSuku')} / ${V(r, 'pBangsa')}`], ['4.', 'P e k e r j a a n', V(r, 'pPekerjaan')], ['5.', 'A g a m a', V(r, 'pAgama')], ['6.', 'Alamat', V(r, 'pAlamat')]], '180px')}
   </div>
   <p style="padding-left:6px;margin-bottom:4px">Di periksa kesehatan badannya dengan teliti :</p>
   <div class="ind2">${kv([['Di', 'Biddokkes Polda NTB'], ['Pada tanggal', esc(tglIndo(r.tglPeriksa))]], '130px')}</div>
-  <p class="j">Atas permintaan dari ${esc(r.permintaanDari)} Nomor: ${esc(r.noSuratRek)} tanggal ${esc(tglIndo(r.tglSuratRek))} berpendapat bahwa:</p>
-  ${kv([['Orang tersebut di atas', `${msTms(r.hasil, ' / ')}<br>untuk melangsungkan perkawinannya.`]], '228px')}
+  <p class="j">Atas permintaan dari ${V(r, 'permintaanDari')} Nomor: ${V(r, 'noSuratRek')} tanggal ${V(r, 'tglSuratRek', tglIndo(r.tglSuratRek))} berpendapat bahwa:</p>
+  ${kv([['Orang tersebut di atas', `${hasilHTML(r, ' / ')}<br>untuk melangsungkan perkawinannya.`]], '228px')}
   <p>Demikian untuk maklum dan dipergunakan sebagaimana mestinya.</p>
   ${ttd('NIKAH', s, `<div>Mataram,${SP}${bulanTahun(r.tglPeriksa)}</div>`, 'a.n KABIDDOKKES POLDA NTB')}
   </div>`;
@@ -1809,11 +1888,11 @@ function suratSENPI(r, s, opt) {
     <li>Rujukan:
       <ol class="alpha">
         <li>${esc(s.SENPI_RUJUKAN_A)}</li>
-        <li>Nota Dinas Karolog Polda NTB Nomor: ${esc(r.noNotaDinas)} tentang permintaan diterbitkan surat keterangan kesehatan untuk izin pinjam pakai dan membawa senjata api organik Polri.</li>
+        <li>Nota Dinas Karolog Polda NTB Nomor: ${V(r, 'noNotaDinas')} tentang permintaan diterbitkan surat keterangan kesehatan untuk izin pinjam pakai dan membawa senjata api organik Polri.</li>
       </ol></li>
     <li>Dengan ini menerangkan bahwa hasil pemeriksaan terhadap:
-      <div style="padding-left:2px">${nkv([['a.', 'Nama', esc(r.nama)], ['b.', 'Tempat dan tanggal lahir', esc(ttlSenpi(r))], ['c.', 'Jenis kelamin', esc(r.jk)], ['d.', 'Agama', esc(r.agama)], ['e.', 'Pangkat/NRP', `${esc(r.pangkat)}/${esc(r.nrp)}`], ['f.', 'Jabatan', esc(r.jabatan)], ['g.', 'Kesatuan', esc(r.kesatuan)], ['h.', 'Alamat kantor', esc(r.alamatKantor)]], '190px')}</div>
-      <div style="padding-left:28px">yang bersangkutan dinyatakan:<br>${msTms(r.hasil, '/')} untuk mendapatkan surat izin Pinjam Pakai Senjata Api/Surat Izin Pinjam Pakai dan Membawa Senjata Api</div></li>
+      <div style="padding-left:2px">${nkv([['a.', 'Nama', V(r, 'nama')], ['b.', 'Tempat dan tanggal lahir', V(r, 'ttl', ttlSenpi(r))], ['c.', 'Jenis kelamin', V(r, 'jk')], ['d.', 'Agama', V(r, 'agama')], ['e.', 'Pangkat/NRP', `${V(r, 'pangkat')}/${V(r, 'nrp')}`], ['f.', 'Jabatan', V(r, 'jabatan')], ['g.', 'Kesatuan', V(r, 'kesatuan')], ['h.', 'Alamat kantor', V(r, 'alamatKantor')]], '190px')}</div>
+      <div style="padding-left:28px">yang bersangkutan dinyatakan:<br>${hasilHTML(r, '/')} untuk mendapatkan surat izin Pinjam Pakai Senjata Api/Surat Izin Pinjam Pakai dan Membawa Senjata Api</div></li>
     <li>Hasil pemeriksaan kesehatan ini berlaku selama 1 (satu) tahun sejak dikeluarkan, apabila di kemudian hari ternyata terdapat kekeliruan, surat keterangan hasil penelitian ini akan dicabut.</li>
   </ol>
   <div class="senpi-foot">
@@ -2144,7 +2223,11 @@ const ACTIONS = {
   menu: () => drawer(true),
   unmenu: () => drawer(false),
   qr: openQR,
-  closeDetail: closeDetail,
+  closeDetail: () => closeDetail(),
+  startEdit: startEdit,
+  cancelEdit: () => cancelEdit(),
+  saveEdit: () => saveEdit(),
+  toggleHasil: () => { if (!D.edit) return; const x = editRec(); D.edit.draft.hasil = x.hasil === 'TMS' ? 'MS' : 'TMS'; const c = $('#dForm [data-k="hasil"] input[value="' + D.edit.draft.hasil + '"]'); if (c) c.checked = true; renderEditPreview(); },
   pane: el => setPane(el.dataset.pane),
   archiveNow: () => { const r = curRec(); if (r) archiveRecs(D.j, [r]); },
   qrPick: el => { QR.t = el.dataset.t; renderQR(); },
@@ -2175,6 +2258,11 @@ function onInput(ev) {
   const fld = t.closest ? t.closest('.field') : null;
   if (fld && fld.classList.contains('bad')) setErr(fld, '');
   if (t.closest && t.closest('#fBody')) { updateProgress(); saveDraftSoon(); }
+  else if (D.edit && t.classList && t.classList.contains('ed')) { const k = t.dataset.ek; D.edit.draft[k] = t.textContent.replace(/\s+/g, ' ').trim(); const inp = document.getElementById('e_' + k); if (inp && inp.tagName === 'INPUT') inp.value = D.edit.draft[k]; fitPreview(); }
+  else if (D.edit && t.closest && t.closest('#dForm')) {
+    const host = t.closest('[data-k]');
+    if (host) { const k = host.dataset.k; D.edit.draft[k] = getVal($('#dForm'), k); editPreviewSoon(); }
+  }
 }
 document.addEventListener('input', onInput);
 document.addEventListener('change', ev => {
@@ -2198,7 +2286,15 @@ document.addEventListener('change', ev => {
 });
 $('#q').addEventListener('input', debounce(() => { ADM.q = $('#q').value; ADM.limit = PAGE; renderList(); }, 120));
 $('#fBody').addEventListener('submit', ev => { ev.preventDefault(); review(); });
+document.addEventListener('paste', ev => {
+  const t = ev.target;
+  if (!(t.classList && t.classList.contains('ed'))) return;
+  ev.preventDefault();
+  const txt = ((ev.clipboardData || window.clipboardData).getData('text') || '').replace(/\s+/g, ' ');
+  document.execCommand('insertText', false, txt);
+});
 document.addEventListener('keydown', ev => {
+  if (ev.key === 'Enter' && ev.target.classList && ev.target.classList.contains('ed')) { ev.preventDefault(); ev.target.blur(); return; }
   const typing = /^(INPUT|TEXTAREA|SELECT)$/.test((ev.target && ev.target.tagName) || '');
   if (ev.key === 'Escape') {
     if (MODALS.length) { ev.preventDefault(); closeTop(); return; }
